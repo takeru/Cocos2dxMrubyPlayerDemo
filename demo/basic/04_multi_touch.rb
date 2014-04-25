@@ -1,0 +1,88 @@
+class MultiTouchApp
+  attr_reader :scene
+  def initialize
+    @touch_count = 0
+    @sprites = []
+
+    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+
+    @layer = Layer.new
+    @layer.setTouchMode(Cocos2d::KCCTouchesAllAtOnce)
+    @layer.registerScriptTouchHandler(true) do |eventType, touches|
+      case eventType
+      when Cocos2d::CCTOUCHBEGAN
+        onTouchBegan(touches)
+      when Cocos2d::CCTOUCHMOVED
+        onTouchMoved(touches)
+      when Cocos2d::CCTOUCHENDED
+        onTouchEnded(touches)
+      when Cocos2d::CCTOUCHCANCELLED
+        onTouchCanceled(touches)
+      else
+        raise "unknown eventType=#{eventType} touches=#{touches}"
+      end
+    end
+    @layer.setTouchEnabled(true)
+
+    @scene = Scene.new
+    @scene.addChild(@layer)
+
+    nil
+  end
+
+  def onTouchBegan(touches)
+    log("onTouchBegan: touches.size=#{touches.size}")
+    touches.each do |touch|
+      point = @layer.convertTouchToNodeSpace(touch)
+      log("onTouchBegan: #{touch.getID} (#{point.x.floor},#{point.y.floor})")
+
+      name = ["Icon-57.png","Icon-72.png","Icon-114.png","Icon-144.png"].sample
+      sprite = Sprite.new(name)
+      sprite.setPosition(point.x, point.y)
+      @layer.addChild(sprite)
+      @sprites[touch.getID] = sprite
+    end
+
+    return true
+  end
+
+  def onTouchMoved(touches)
+    log("onTouchMoved: touches.size=#{touches.size}")
+    touches.each do |touch|
+      point = @layer.convertTouchToNodeSpace(touch)
+      log("onTouchMoved: #{touch.getID} (#{point.x.floor},#{point.y.floor})")
+      @sprites[touch.getID].setPosition(point.x, point.y)
+    end
+  end
+
+  def onTouchEnded(touches)
+    log("onTouchEnded: touches.size=#{touches.size}")
+    touches.each do |touch|
+      point = @layer.convertTouchToNodeSpace(touch)
+      log("onTouchEnded: #{touch.getID} (#{point.x.floor},#{point.y.floor})")
+      @sprites[touch.getID] = nil
+    end
+
+    @touch_count += 1
+    log "@touch_count = #{@touch_count}"
+    if 10 < @touch_count
+      Cocos2dx.reboot!
+    end
+  end
+
+  def onTouchCanceled(touches)
+    onTouchEnded(touches)
+  end
+end
+
+begin
+  d = Cocos2d::CCDirector.sharedDirector
+  view = Cocos2d::CCEGLView.sharedOpenGLView
+  frame_size = view.getFrameSize
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  d.setDisplayStats(true)
+  app = MultiTouchApp.new
+  d.pushScene(app.scene.cc_object)
+rescue => e
+  log "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"
+end
