@@ -55,7 +55,7 @@ class UpdateApp
 
     @nodes.pop.removeFromParentAndCleanup(true)
     if @nodes.size == 0
-      Cocos2dx.reboot!
+      reboot!
     end
   end
 end

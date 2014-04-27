@@ -17,7 +17,7 @@ class SpriteApp
     item.setPosition(@win_size.width*0.5, @win_size.height*0.25)
     item.registerScriptTapHandler do
       puts "*** reboot! ***"
-      Cocos2dx.reboot!
+      reboot!
     end
     menu.addChild(item)
 

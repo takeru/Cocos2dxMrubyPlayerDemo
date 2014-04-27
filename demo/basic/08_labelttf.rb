@@ -5,7 +5,7 @@ class LabelTTFApp
     @scene = Scene.new
     @layer = Layer.new
     @layer.registerScriptTouchHandler do |eventType, touch|
-      Cocos2dx.reboot!
+      reboot!
     end
     @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)

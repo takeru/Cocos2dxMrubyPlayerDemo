@@ -98,7 +98,7 @@ class Box2dApp
     item.setAnchorPoint(ccp(0,0))
     item.setPosition(ccp(0,@win_size.height-30))
     item.registerScriptTapHandler do
-      Cocos2dx.reboot!
+      reboot!
       log "*** reboot! ***"
     end
     menu.addChild(item)

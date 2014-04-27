@@ -102,7 +102,7 @@ class Stage < Layer
     CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect($resources_path + "reset.wav")
 
     if true
-      Cocos2dx.reboot!
+      reboot!
     else
       d = CCDirector.sharedDirector
       app = KaniApp.new

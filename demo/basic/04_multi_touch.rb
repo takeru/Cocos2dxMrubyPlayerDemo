@@ -66,7 +66,7 @@ class MultiTouchApp
     @touch_count += 1
     log "@touch_count = #{@touch_count}"
     if 10 < @touch_count
-      Cocos2dx.reboot!
+      reboot!
     end
   end
 

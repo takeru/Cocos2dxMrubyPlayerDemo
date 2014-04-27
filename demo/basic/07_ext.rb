@@ -16,20 +16,16 @@ class ExtApp
       log "swipe! #{@count} direction=#{swipe.direction} location=(#{swipe.location.x.floor},#{swipe.location.y.floor})"
       @count -= 1
       if @count < 0
-        Cocos2dx.reboot!
+        reboot!
       end
     end
     @scene.addChild(swipe_recognizer)
 
     @log_layer = LogLayer.new(30)
     @scene.addChild(@log_layer)
+    Logger.add(@log_layer)
 
     log "swipe!"
-  end
-
-  def log(s)
-    @log_layer.log(s)
-    super.log(s)
   end
 end
 

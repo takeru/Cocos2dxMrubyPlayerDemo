@@ -28,6 +28,7 @@ class TouchApp
 
     @log_layer = LogLayer.new
     @scene.addChild(@log_layer)
+    Logger.add(@log_layer)
 
     nil
   end
@@ -58,17 +59,12 @@ class TouchApp
     @touch_count += 1
     log "@touch_count = #{@touch_count}"
     if 10 < @touch_count
-      Cocos2dx.reboot!
+      reboot!
     end
   end
 
   def onTouchCanceled(touch)
     onTouchEnded(touch)
-  end
-
-  def log(s)
-    @log_layer.log(s)
-    super.log(s)
   end
 end
 

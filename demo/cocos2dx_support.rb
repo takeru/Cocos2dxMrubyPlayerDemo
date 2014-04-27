@@ -193,19 +193,6 @@ module Cocos2dx
     def close
       @ws.close if @ws
     end
-
-    @@url = nil
-    def self.url=(url); @@url = url; end
-
-    @@instance = nil
-    def self.instance
-      @@instance ||= new(@@url)
-    end
-  end
-
-  def self.reboot!
-    ::Cocos2dx::WebSocketLogger.instance.close
-    Cocos2dxMrubyPlayer.reboot!
   end
 
   class LogLayer < Layer
@@ -227,12 +214,25 @@ module Cocos2dx
       @logs.shift if @logs_max < @logs.size
       @label.setString(@logs.join("\n"))
     end
+    def close
+      # nop
+    end
   end
 
-  module ::Kernel
-    def log(s)
-      puts s
-      ::Cocos2dx::WebSocketLogger.instance.log(s)
+  class Logger
+    @@loggers = []
+    def self.add(l)
+      @@loggers.push(l)
+    end
+    def self.cleanup
+      @@loggers.each do |l|
+        l.close
+      end
+    end
+    def self.log(s)
+      @@loggers.each do |l|
+        l.log(s)
+      end
     end
   end
 
@@ -254,4 +254,15 @@ module Cocos2dx
   end
 
   CCSizeZero = cCSizeMake(0,0)
+end
+
+module ::Kernel
+  def log(s)
+    puts s
+    Cocos2dx::Logger.log(s)
+  end
+  def reboot!
+    Cocos2dx::Logger.cleanup
+    Cocos2dxMrubyPlayer.reboot!
+  end
 end

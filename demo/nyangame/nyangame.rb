@@ -193,7 +193,7 @@ class NyanGame
 
   def _reset
     if gameover?
-      Cocos2dx.reboot!
+      reboot!
       puts "**** reboot! ****"
       return
     end

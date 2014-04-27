@@ -1,7 +1,7 @@
 Cocos2dxMrubyPlayer.load("demo/cocos2dx_support.rb")
-include Cocos2dx
-WebSocketLogger.url = "ws://192.168.0.6:9292"
+Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 log "==== cocos2dx.rb loaded. ===="
+include Cocos2dx
 
 class MenuApp
   attr_reader :scene
