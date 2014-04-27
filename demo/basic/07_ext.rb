@@ -4,11 +4,6 @@ class ExtApp
     @win_size = CCDirector.sharedDirector.getWinSize
     @scene = Scene.new
 
-    @layer = Layer.new
-#                     [STATIC, 'CCLabelTTF*', 'create', ['const char*', 'const char*', 'float']],
-
-
-
     swipe_recognizer = CCSwipeGestureRecognizerForScript.create
     swipe_recognizer.setDirection(
       KSwipeGestureRecognizerDirectionRight |
@@ -16,10 +11,25 @@ class ExtApp
       KSwipeGestureRecognizerDirectionUp    |
       KSwipeGestureRecognizerDirectionDown
     )
+    @count = 10
     swipe_recognizer.setHandler do |swipe|
-      log "**** swipe! direction=#{swipe.direction} location=(#{swipe.location.x},#{swipe.location.y})****"
+      log "swipe! #{@count} direction=#{swipe.direction} location=(#{swipe.location.x.floor},#{swipe.location.y.floor})"
+      @count -= 1
+      if @count < 0
+        Cocos2dx.reboot!
+      end
     end
     @scene.addChild(swipe_recognizer)
+
+    @log_layer = LogLayer.new(30)
+    @scene.addChild(@log_layer)
+
+    log "swipe!"
+  end
+
+  def log(s)
+    @log_layer.log(s)
+    super.log(s)
   end
 end
 

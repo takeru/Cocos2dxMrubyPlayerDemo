@@ -26,6 +26,9 @@ class TouchApp
     @scene = Scene.new
     @scene.addChild(@layer)
 
+    @log_layer = LogLayer.new
+    @scene.addChild(@log_layer)
+
     nil
   end
 
@@ -61,6 +64,11 @@ class TouchApp
 
   def onTouchCanceled(touch)
     onTouchEnded(touch)
+  end
+
+  def log(s)
+    @log_layer.log(s)
+    super.log(s)
   end
 end
 

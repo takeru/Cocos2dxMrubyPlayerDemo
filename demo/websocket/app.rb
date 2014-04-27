@@ -43,6 +43,9 @@ class WsApp
     @scene = Scene.new
     @scene.addChild(@layer)
 
+    @log_layer = LogLayer.new
+    @scene.addChild(@log_layer)
+
     ws_url = "ws://infinite-shelf-9645.herokuapp.com"
     # ws_url = "ws://echo.websocket.org"
     @ws = WebSocket.create(ws_url) do |event,data|
@@ -76,7 +79,7 @@ class WsApp
     item.setAnchorPoint(ccp(0,0))
     item.setPosition(ccp(0,@win_size.height-30))
     item.registerScriptTapHandler do
-      @ws.close
+      @ws.close if @ws
       Cocos2dx.reboot!
       log "*** reboot! ***"
     end
@@ -105,6 +108,11 @@ class WsApp
 
     @touch_count += 1
     log "@touch_count = #{@touch_count}"
+  end
+
+  def log(s)
+    @log_layer.log(s)
+    super.log(s)
   end
 end
 

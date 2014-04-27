@@ -208,12 +208,25 @@ module Cocos2dx
     Cocos2dxMrubyPlayer.reboot!
   end
 
-  Callback.uncaughtException = proc do |e,bt|
-    s = "Exception: #{e.inspect}\n"
-    bt.each do |b|
-      s << "  #{b}\n"
-    end if bt
-    log(s)
+  class LogLayer < Layer
+    def initialize(font_height=20)
+      @cc_class_name = 'CCLayer'
+      super
+
+      @win_size = CCDirector.sharedDirector.getWinSize
+      @font_height = font_height
+      @logs_max = (@win_size.height / @font_height).floor
+      @label = LabelTTF.new("", 'Courier New', @font_height, cCSizeMake(@win_size.width,@win_size.height), KCCTextAlignmentLeft, KCCVerticalTextAlignmentTop)
+      @label.setAnchorPoint(ccp(0,0))
+      @label.setPosition(0,0)
+      addChild(@label)
+      @logs = []
+    end
+    def log(s)
+      @logs.push(s)
+      @logs.shift if @logs_max < @logs.size
+      @label.setString(@logs.join("\n"))
+    end
   end
 
   module ::Kernel
@@ -221,6 +234,14 @@ module Cocos2dx
       puts s
       ::Cocos2dx::WebSocketLogger.instance.log(s)
     end
+  end
+
+  Callback.uncaughtException = proc do |e,bt|
+    s = "Exception: #{e.inspect}\n"
+    bt.each do |b|
+      s << "  #{b}\n"
+    end if bt
+    log(s)
   end
 
   class CCSize
@@ -231,5 +252,6 @@ module Cocos2dx
       "CCSize(w=#{width},h=#{height})"
     end
   end
-end
 
+  CCSizeZero = cCSizeMake(0,0)
+end

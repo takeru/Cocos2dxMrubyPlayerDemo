@@ -24,6 +24,7 @@ class MenuApp
       "basic/05_drawnode.rb",
       "basic/06_update.rb",
       "basic/07_ext.rb",
+      "basic/08_labelttf.rb",
       "nyangame/nyangame.rb",
       "kani/app.rb",
       "websocket/app.rb",
@@ -41,7 +42,11 @@ class MenuApp
       ))
       item.registerScriptTapHandler do
         log "Menu: #{filename} selected."
-        Cocos2dxMrubyPlayer.load("demo/"+filename)
+        begin
+          Cocos2dxMrubyPlayer.load("demo/"+filename)
+        rescue => e
+          log "failed to load '#{filename}'. e=#{e.inspect}"
+        end
       end
       menu.addChild(item)
     end
