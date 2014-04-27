@@ -5,24 +5,24 @@ class DrawNodeApp
   end
 
   def _create_scene
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
     @layer.registerScriptTouchHandler do |eventType, touch|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touch)
-      when Cocos2d::CCTOUCHMOVED
+      when CCTOUCHMOVED
         onTouchMoved(touch)
-      when Cocos2d::CCTOUCHENDED
+      when CCTOUCHENDED
         onTouchEnded(touch)
-      when Cocos2d::CCTOUCHCANCELLED
+      when CCTOUCHCANCELLED
         onTouchCanceled(touch)
       else
         raise "unknown eventType=#{eventType} touch=#{touch}"
       end
     end
-    @layer.setTouchMode(Cocos2d::KCCTouchesOneByOne)
+    @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
 
     @nodes = []
@@ -30,17 +30,17 @@ class DrawNodeApp
     # circles
     5.times do |n|
       dot = DrawNode.new
-      dot.drawDot(Cocos2d::ccp(@win_size.width*rand, @win_size.height*rand), 200*rand, Cocos2d::ccc4f(rand, rand, rand, 0.7+0.3*rand))
+      dot.drawDot(ccp(@win_size.width*rand, @win_size.height*rand), 200*rand, ccc4f(rand, rand, rand, 0.7+0.3*rand))
       @nodes << dot
     end
 
     # lines
     5.times do |n|
       segment = DrawNode.new
-      segment.drawSegment(Cocos2d::ccp(@win_size.width*rand, @win_size.height*rand),
-                          Cocos2d::ccp(@win_size.width*rand, @win_size.height*rand),
+      segment.drawSegment(ccp(@win_size.width*rand, @win_size.height*rand),
+                          ccp(@win_size.width*rand, @win_size.height*rand),
                           20*rand,
-                          Cocos2d::ccc4f(rand, rand, rand, 0.7+0.3*rand))
+                          ccc4f(rand, rand, rand, 0.7+0.3*rand))
       @nodes << segment
     end
 
@@ -49,12 +49,12 @@ class DrawNodeApp
       polygon = DrawNode.new
       points = []
       [3,4,5,6].sample.times do
-        points << Cocos2d::ccp(@win_size.width*rand, @win_size.height*rand)
+        points << ccp(@win_size.width*rand, @win_size.height*rand)
       end
       polygon.drawPolygon(points,
-                          Cocos2d::ccc4f(rand, rand, rand, 0.7+0.3*rand),
+                          ccc4f(rand, rand, rand, 0.7+0.3*rand),
                           10*rand,
-                          Cocos2d::ccc4f(rand, rand, rand, 0.7+0.3*rand)
+                          ccc4f(rand, rand, rand, 0.7+0.3*rand)
                           )
       @nodes << polygon
     end
@@ -87,10 +87,10 @@ class DrawNodeApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = DrawNodeApp.new
   d.pushScene(app.scene.cc_object)

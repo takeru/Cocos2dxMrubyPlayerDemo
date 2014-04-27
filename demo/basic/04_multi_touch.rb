@@ -4,19 +4,19 @@ class MultiTouchApp
     @touch_count = 0
     @sprites = []
 
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
-    @layer.setTouchMode(Cocos2d::KCCTouchesAllAtOnce)
+    @layer.setTouchMode(KCCTouchesAllAtOnce)
     @layer.registerScriptTouchHandler(true) do |eventType, touches|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touches)
-      when Cocos2d::CCTOUCHMOVED
+      when CCTOUCHMOVED
         onTouchMoved(touches)
-      when Cocos2d::CCTOUCHENDED
+      when CCTOUCHENDED
         onTouchEnded(touches)
-      when Cocos2d::CCTOUCHCANCELLED
+      when CCTOUCHCANCELLED
         onTouchCanceled(touches)
       else
         raise "unknown eventType=#{eventType} touches=#{touches}"
@@ -76,10 +76,10 @@ class MultiTouchApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = MultiTouchApp.new
   d.pushScene(app.scene.cc_object)

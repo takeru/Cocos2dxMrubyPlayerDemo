@@ -1,11 +1,11 @@
 class Player < Sprite
   def initialize
     @cc_class_name = 'CCSprite'
-    tex = Cocos2d::CCTextureCache.sharedTextureCache.addImage($resources_path + "vx_chara03_a.png")
-    rect = Cocos2d::cCRectMake(0,0,0,0)
+    tex = CCTextureCache.sharedTextureCache.addImage($resources_path + "vx_chara03_a.png")
+    rect = cCRectMake(0,0,0,0)
     super(:WithTexture, tex, rect)
 
-    self.setAnchorPoint(Cocos2d::ccp(0,0))
+    self.setAnchorPoint(ccp(0,0))
 
     @count = 0
     @y     = 0
@@ -49,7 +49,7 @@ class Player < Sprite
   def _setTexturePosition(tx,ty)
     w = 384/12
     h = 384/ 8
-    rect = Cocos2d::cCRectMake(w*tx, h*ty, w, h)
+    rect = cCRectMake(w*tx, h*ty, w, h)
     setTextureRect(rect)
   end
 end

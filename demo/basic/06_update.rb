@@ -2,7 +2,7 @@ class Dot < DrawNode
   def initialize(x, y, radius, r, g, b, a)
     @cc_class_name = 'CCDrawNode'
     super()
-    self.drawDot(Cocos2d::ccp(0, 0), radius, Cocos2d::ccc4f(r, g, b, a))
+    self.drawDot(ccp(0, 0), radius, ccc4f(r, g, b, a))
     @x  = x
     @y  = y
     @vx = r*2-1
@@ -22,7 +22,7 @@ class UpdateApp
   end
 
   def _create_scene
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
 
@@ -61,10 +61,10 @@ class UpdateApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = UpdateApp.new
   d.pushScene(app.scene.cc_object)

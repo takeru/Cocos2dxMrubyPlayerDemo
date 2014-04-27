@@ -1,7 +1,7 @@
 class SpriteApp
   attr_reader :scene
   def initialize
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     layer = Layer.new
 
@@ -29,10 +29,10 @@ class SpriteApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = SpriteApp.new
   d.pushScene(app.scene.cc_object)

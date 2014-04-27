@@ -1,7 +1,7 @@
-Cocos2dxMrubyPlayer.load("demo/cocos2dx.rb")
-Cocos2dx::WebSocketLogger.url = "ws://192.168.0.6:9292"
-log "==== cocos2dx.rb loaded. ===="
+Cocos2dxMrubyPlayer.load("demo/cocos2dx_support.rb")
 include Cocos2dx
+WebSocketLogger.url = "ws://192.168.0.6:9292"
+log "==== cocos2dx.rb loaded. ===="
 
 class MenuApp
   attr_reader :scene
@@ -10,7 +10,7 @@ class MenuApp
   end
 
   def _create_scene
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
 
@@ -23,7 +23,7 @@ class MenuApp
       "basic/04_multi_touch.rb",
       "basic/05_drawnode.rb",
       "basic/06_update.rb",
-     #"basic/07_sound.rb",
+      "basic/07_ext.rb",
       "nyangame/nyangame.rb",
       "kani/app.rb",
       "websocket/app.rb",
@@ -34,8 +34,8 @@ class MenuApp
     cols = 3
     filenames.each_with_index do |filename, index|
       item = MenuItemFont.new(filename)
-      item.setAnchorPoint(Cocos2d::ccp(0,0))
-      item.setPosition(Cocos2d::ccp(
+      item.setAnchorPoint(ccp(0,0))
+      item.setPosition(ccp(
         10+(index/rows).floor*(@win_size.width/cols),
         @win_size.height - (@win_size.height/rows) * (0.5+index%rows)
       ))
@@ -55,16 +55,17 @@ class MenuApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = Cocos2dx::CCDirector.sharedDirector
+  view = Cocos2dx::CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
-  #Cocos2d::CCEGLView.sharedOpenGLView.setDesignResolutionSize(480*2,320*2,Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
+  #CCEGLView.sharedOpenGLView.setDesignResolutionSize(480*2,320*2,KResolutionExactFit)
   #d.setContentScaleFactor(1.0)
   d.setDisplayStats(false)
 
   app = MenuApp.new
   d.pushScene(app.scene.cc_object)
 rescue => e
+  puts "a"
   log "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"
 end

@@ -6,7 +6,7 @@ class Bg < Sprite
     @speed = speed
     @x     = x
 
-    self.setAnchorPoint(Cocos2d::ccp(0,0))
+    self.setAnchorPoint(ccp(0,0))
     self.setPosition(@x, 0)
   end
 

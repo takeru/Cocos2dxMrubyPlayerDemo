@@ -9,7 +9,7 @@ class KaniApp
   attr_reader :scene
 
   def initialize
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
     _create_scene
   end
 
@@ -26,10 +26,10 @@ class KaniApp
 end
 
 begin
-  p Cocos2d::CCEGLView.sharedOpenGLView.getDesignResolutionSize
-  Cocos2d::CCEGLView.sharedOpenGLView.setDesignResolutionSize(480,320,Cocos2d::KResolutionExactFit)
+  puts "DesignResolutionSize #{CCEGLView.sharedOpenGLView.getDesignResolutionSize}"
+  CCEGLView.sharedOpenGLView.setDesignResolutionSize(480,320,KResolutionExactFit)
 
-  d = Cocos2d::CCDirector.sharedDirector
+  d = CCDirector.sharedDirector
   d.setContentScaleFactor(1.0)
   d.setDisplayStats(true)
 

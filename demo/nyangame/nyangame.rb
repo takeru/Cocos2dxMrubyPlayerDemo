@@ -45,7 +45,7 @@ class NyanGame
   attr_reader :scene
 
   def initialize
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
     @animating = false
     @score     = 0
     _create_scene
@@ -57,19 +57,19 @@ class NyanGame
     @touchBeginPoint = nil
     @layer.registerScriptTouchHandler do |eventType, touch|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touch)
-      when Cocos2d::CCTOUCHMOVED
+      when CCTOUCHMOVED
         onTouchMoved(touch)
-      when Cocos2d::CCTOUCHENDED
+      when CCTOUCHENDED
         onTouchEnded(touch)
-      when Cocos2d::CCTOUCHCANCELLED
+      when CCTOUCHCANCELLED
         onTouchCanceled(touch)
       else
         raise "unknown eventType=#{eventType}"
       end
     end
-    @layer.setTouchMode(Cocos2d::KCCTouchesOneByOne)
+    @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
 
     @bg = Sprite.new($resources_path + "background.png")
@@ -91,7 +91,7 @@ class NyanGame
   def blockCCPoint(x, y)
     offsetX = @bg.getContentSize.width  * 0.168
     offsetY = @bg.getContentSize.height * 0.029
-    return Cocos2d::ccp(
+    return ccp(
       (x+0.5) * @block_size + offsetX,
       (y+0.5) * @block_size + offsetY
     )
@@ -128,18 +128,18 @@ class NyanGame
     }
     COLORS.each do |color|
       label = LabelBMFont.new("", $resources_path + "#{color}Font.fnt")
-      label.setPosition(Cocos2d::ccp(bg_size.width * 0.78, bg_size.height * height_rates[color]))
+      label.setPosition(ccp(bg_size.width * 0.78, bg_size.height * height_rates[color]))
       @bg.addChild(label, ZORDER[:label], TAG[:"label_#{color}"])
     end
 
     # score
     label = LabelBMFont.new("", $resources_path + "whiteFont.fnt")
-    label.setPosition(Cocos2d::ccp(bg_size.width * 0.78, bg_size.height * 0.75))
+    label.setPosition(ccp(bg_size.width * 0.78, bg_size.height * 0.75))
     @bg.addChild(label, ZORDER[:label], TAG[:label_score])
 
     # highscore
     label = LabelBMFont.new("", $resources_path + "whiteFont.fnt")
-    label.setPosition(Cocos2d::ccp(bg_size.width * 0.78, bg_size.height * 0.87))
+    label.setPosition(ccp(bg_size.width * 0.78, bg_size.height * 0.87))
     @bg.addChild(label, ZORDER[:label], TAG[:label_highscore])
   end
 
@@ -165,7 +165,7 @@ class NyanGame
       bg_size = @bg.getContentSize
 
       reset_button = MenuItemImage.new($resources_path + "reset1.png", $resources_path + "reset1.png")
-      reset_button.setPosition(Cocos2d::ccp(bg_size.width * 0.78, bg_size.height * 0.1))
+      reset_button.setPosition(ccp(bg_size.width * 0.78, bg_size.height * 0.1))
       reset_button.registerScriptTapHandler do
         _reset
       end
@@ -186,7 +186,7 @@ class NyanGame
     label.setString(@score.to_s)
 
     # highscore
-    highscore = Cocos2d::CCUserDefault.sharedUserDefault.getIntegerForKey("highscore", 0)
+    highscore = CCUserDefault.sharedUserDefault.getIntegerForKey("highscore", 0)
     label = @bg.getChildByTag(TAG[:label_highscore])
     label.setString(highscore.to_s)
   end
@@ -197,7 +197,7 @@ class NyanGame
       puts "**** reboot! ****"
       return
     end
-    d = Cocos2d::CCDirector.sharedDirector
+    d = CCDirector.sharedDirector
     nyangame = NyanGame.new
     d.replaceScene(nyangame.scene.cc_object)
   end
@@ -237,7 +237,7 @@ class NyanGame
       (0...BLOCK_MAX_Y).each do |_y|
         tag = xy_to_block_tag(_x,_y)
         block = @bg.getChildByTag(tag)
-        if block && block.boundingBox.containsPoint(Cocos2d::ccp(point.x,point.y))
+        if block && block.boundingBox.containsPoint(ccp(point.x,point.y))
           return block
         end
       end
@@ -259,16 +259,16 @@ class NyanGame
 
   def delete_blocks(blocks)
     blocks.each_with_index do |b, index|
-      scale_action = Cocos2d::CCScaleTo.create(REMOVEING_TIME, 0)
-      remove_action = Cocos2d::CCCallFunc.create do
+      scale_action = CCScaleTo.create(REMOVEING_TIME, 0)
+      remove_action = CCCallFunc.create do
         b.removeFromParentAndCleanup(true)
       end
-      action = Cocos2d::CCSequence.createWithTwoActions(scale_action, remove_action)
+      action = CCSequence.createWithTwoActions(scale_action, remove_action)
       if index == 0
-        sound_action = Cocos2d::CCCallFunc.create do
+        sound_action = CCCallFunc.create do
           CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect(MP3_REMOVE_BLOCK)
         end
-        action = Cocos2d::CCSpawn.createWithTwoActions(action, sound_action)
+        action = CCSpawn.createWithTwoActions(action, sound_action)
       end
       b.runAction(action)
     end
@@ -320,15 +320,15 @@ class NyanGame
     schedule_once(MOVING_TIME_2) do |a,b|
       @animating = false
       if gameover?
-        highscore = Cocos2d::CCUserDefault.sharedUserDefault.getIntegerForKey("highscore", 0)
+        highscore = CCUserDefault.sharedUserDefault.getIntegerForKey("highscore", 0)
         if highscore < @score
-          Cocos2d::CCUserDefault.sharedUserDefault.setIntegerForKey("highscore", @score)
+          CCUserDefault.sharedUserDefault.setIntegerForKey("highscore", @score)
         end
 
         bg_size = @bg.getContentSize
 
         @gameover = Sprite.new($resources_path + "gameover.png")
-        @gameover.setPosition(Cocos2d::ccp(bg_size.width * 0.5, bg_size.height * 0.8))
+        @gameover.setPosition(ccp(bg_size.width * 0.5, bg_size.height * 0.8))
         @bg.addChild(@gameover, ZORDER[:gameover], TAG[:gameover])
 
         @layer.setTouchEnabled(false)
@@ -343,7 +343,7 @@ class NyanGame
       (0...BLOCK_MAX_Y).each do |_y|
         b = @bg.getChildByTag(xy_to_block_tag(_x,_y))
         if b && 0<=b.next_x && 0<=b.next_y
-          move_action = Cocos2d::CCMoveTo.create(moving_time, blockCCPoint(b.next_x, b.next_y))
+          move_action = CCMoveTo.create(moving_time, blockCCPoint(b.next_x, b.next_y))
           b.runAction(move_action)
           b.setTag(xy_to_block_tag(b.next_x, b.next_y))
           b.next_x = -1
@@ -369,7 +369,7 @@ class NyanGame
   end
 
   def schedule_once(delay, *args, &block)
-    scheduler = Cocos2d::CCDirector.sharedDirector.getScheduler
+    scheduler = CCDirector.sharedDirector.getScheduler
 
     entry_id = scheduler.scheduleScriptFunc(delay, false) do
       scheduler.unscheduleScriptEntry(entry_id)
@@ -379,7 +379,7 @@ class NyanGame
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
+  d = CCDirector.sharedDirector
   d.setContentScaleFactor(768.0 / d.getWinSize.height)
 
   nyangame = NyanGame.new

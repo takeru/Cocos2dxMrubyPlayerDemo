@@ -14,17 +14,17 @@ class Stage < Layer
     super
     @score = 0
 
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     self.registerScriptTouchHandler do |eventType, touch|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touch)
-      when Cocos2d::CCTOUCHEND
+      when CCTOUCHEND
         onTouchEnd(touch)
       end
     end
-    self.setTouchMode(Cocos2d::KCCTouchesOneByOne)
+    self.setTouchMode(KCCTouchesOneByOne)
     self.setTouchEnabled(true)
 
     @player = Player.new
@@ -104,7 +104,7 @@ class Stage < Layer
     if true
       Cocos2dx.reboot!
     else
-      d = Cocos2d::CCDirector.sharedDirector
+      d = CCDirector.sharedDirector
       app = KaniApp.new
       d.replaceScene(app.scene.cc_object)
     end

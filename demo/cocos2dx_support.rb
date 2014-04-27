@@ -41,7 +41,7 @@ module Cocos2dx
     end
   end
 
-  ::Cocos2d::Callback.removeScriptObject = proc do |cc_obj|
+  Callback.removeScriptObject = proc do |cc_obj|
     WrapObjects.remove(cc_obj)
   end
 
@@ -57,7 +57,7 @@ module Cocos2dx
           @cc_constructor_name += suffix.to_s
         end
       end
-      @cc_class = Cocos2d.const_get(@cc_class_name)
+      @cc_class = Cocos2dx.const_get(@cc_class_name)
       args = _wrap_object_to_cc_object(args)
       @cc_object = @cc_class.send(@cc_constructor_name, *args)
       @cc_object.m_nLuaID = @cc_object.m_uID
@@ -89,7 +89,7 @@ module Cocos2dx
 
       ret = @cc_object.send(method, *args, &block)
 
-      if ret.kind_of?(Cocos2d::CCObject)
+      if ret.kind_of?(CCObject)
         tmp = WrapObjects.get(ret.m_nLuaID)
         ret = tmp if tmp
       end
@@ -124,6 +124,9 @@ module Cocos2dx
   class SpriteBatchNode < Node
   end
 
+  class LabelTTF < Sprite
+  end
+
   class LabelBMFont < SpriteBatchNode
   end
 
@@ -155,7 +158,7 @@ module Cocos2dx
   end
 
   def self.schedule_once(delay, *args, &block)
-    scheduler = Cocos2d::CCDirector.sharedDirector.getScheduler
+    scheduler = CCDirector.sharedDirector.getScheduler
     entry_id = scheduler.scheduleScriptFunc(delay, false) do
       scheduler.unscheduleScriptEntry(entry_id)
       block.call(*args)
@@ -167,7 +170,7 @@ module Cocos2dx
     def initialize(url)
       @queue = []
       @connected = false
-      @ws = Cocos2d::WebSocket.create(url) do |event,data|
+      @ws = WebSocket.create(url) do |event,data|
         if event=="open"
           @connected = true
           flush
@@ -201,27 +204,25 @@ module Cocos2dx
   end
 
   def self.reboot!
-    WebSocketLogger.instance.close
+    ::Cocos2dx::WebSocketLogger.instance.close
     Cocos2dxMrubyPlayer.reboot!
   end
-end
 
-module Kernel
-  def log(s)
-    puts s
-    Cocos2dx::WebSocketLogger.instance.log(s)
+  Callback.uncaughtException = proc do |e,bt|
+    s = "Exception: #{e.inspect}\n"
+    bt.each do |b|
+      s << "  #{b}\n"
+    end if bt
+    log(s)
   end
-end
 
-Cocos2d::Callback.uncaughtException = proc do |e,bt|
-  s = "Exception: #{e.inspect}\n"
-  bt.each do |b|
-    s << "  #{b}\n"
-  end if bt
-  log(s)
-end
+  module ::Kernel
+    def log(s)
+      puts s
+      ::Cocos2dx::WebSocketLogger.instance.log(s)
+    end
+  end
 
-module Cocos2d
   class CCSize
     def inspect
       to_s
@@ -231,3 +232,4 @@ module Cocos2d
     end
   end
 end
+

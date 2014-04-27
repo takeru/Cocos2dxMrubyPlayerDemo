@@ -3,24 +3,24 @@ class TouchApp
   def initialize
     @touch_count = 0
 
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
     @layer.registerScriptTouchHandler do |eventType, touch|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touch)
-      when Cocos2d::CCTOUCHMOVED
+      when CCTOUCHMOVED
         onTouchMoved(touch)
-      when Cocos2d::CCTOUCHENDED
+      when CCTOUCHENDED
         onTouchEnded(touch)
-      when Cocos2d::CCTOUCHCANCELLED
+      when CCTOUCHCANCELLED
         onTouchCanceled(touch)
       else
         raise "unknown eventType=#{eventType} touch=#{touch}"
       end
     end
-    @layer.setTouchMode(Cocos2d::KCCTouchesOneByOne)
+    @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
 
     @scene = Scene.new
@@ -65,10 +65,10 @@ class TouchApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = TouchApp.new
   d.pushScene(app.scene.cc_object)

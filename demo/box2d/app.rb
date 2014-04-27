@@ -1,6 +1,6 @@
 
 $box2d_to_pixel = 80.0
-$view_point = Cocos2d::CCPoint.new
+$view_point = CCPoint.new
 
 class Box < DrawNode
   def initialize
@@ -25,25 +25,25 @@ class Box2dApp
   end
 
   def _create_scene
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
 
     @layer.registerScriptTouchHandler do |eventType, touch|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touch)
-      when Cocos2d::CCTOUCHMOVED
+      when CCTOUCHMOVED
         onTouchMoved(touch)
-      when Cocos2d::CCTOUCHENDED
+      when CCTOUCHENDED
         onTouchEnded(touch)
-      when Cocos2d::CCTOUCHCANCELLED
+      when CCTOUCHCANCELLED
         onTouchCanceled(touch)
       else
         raise "unknown eventType=#{eventType} touch=#{touch}"
       end
     end
-    @layer.setTouchMode(Cocos2d::KCCTouchesOneByOne)
+    @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
 
     @layer.addChild(_create_reboot_menu)
@@ -95,8 +95,8 @@ class Box2dApp
     menu = Menu.new
     menu.setPosition(0,0)
     item = MenuItemFont.new("reboot!")
-    item.setAnchorPoint(Cocos2d::ccp(0,0))
-    item.setPosition(Cocos2d::ccp(0,@win_size.height-30))
+    item.setAnchorPoint(ccp(0,0))
+    item.setPosition(ccp(0,@win_size.height-30))
     item.registerScriptTapHandler do
       Cocos2dx.reboot!
       log "*** reboot! ***"
@@ -127,15 +127,15 @@ class Box2dApp
 
     node = Box.new
     points = [
-      Cocos2d::ccp(-width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
-      Cocos2d::ccp( width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
-      Cocos2d::ccp( width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel),
-      Cocos2d::ccp(-width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel)
+      ccp(-width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
+      ccp( width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
+      ccp( width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel),
+      ccp(-width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel)
     ]
     node.drawPolygon(points,
-      Cocos2d::ccc4f(color[0], color[1], color[2], 1),
+      ccc4f(color[0], color[1], color[2], 1),
       0,
-      Cocos2d::ccc4f(0, 0, 0, 0)
+      ccc4f(0, 0, 0, 0)
     )
     node.body = body
     node.update
@@ -168,10 +168,10 @@ class Box2dApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = Box2dApp.new
   d.pushScene(app.scene.cc_object)

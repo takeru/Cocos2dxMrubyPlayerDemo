@@ -18,25 +18,25 @@ class WsApp
   end
 
   def _create_scene
-    @win_size = Cocos2d::CCDirector.sharedDirector.getWinSize
+    @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
 
     @layer.registerScriptTouchHandler do |eventType, touch|
       case eventType
-      when Cocos2d::CCTOUCHBEGAN
+      when CCTOUCHBEGAN
         onTouchBegan(touch)
-      when Cocos2d::CCTOUCHMOVED
+      when CCTOUCHMOVED
         onTouchMoved(touch)
-      when Cocos2d::CCTOUCHENDED
+      when CCTOUCHENDED
         onTouchEnded(touch)
-      when Cocos2d::CCTOUCHCANCELLED
+      when CCTOUCHCANCELLED
         onTouchCanceled(touch)
       else
         raise "unknown eventType=#{eventType}"
       end
     end
-    @layer.setTouchMode(Cocos2d::KCCTouchesOneByOne)
+    @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
     @layer.addChild(_create_reboot_menu)
 
@@ -45,7 +45,7 @@ class WsApp
 
     ws_url = "ws://infinite-shelf-9645.herokuapp.com"
     # ws_url = "ws://echo.websocket.org"
-    @ws = Cocos2d::WebSocket.create(ws_url) do |event,data|
+    @ws = WebSocket.create(ws_url) do |event,data|
       if event=="message"
         begin
           obj = JSON.parse(data)
@@ -73,8 +73,8 @@ class WsApp
     menu = Menu.new
     menu.setPosition(0,0)
     item = MenuItemFont.new("reboot!")
-    item.setAnchorPoint(Cocos2d::ccp(0,0))
-    item.setPosition(Cocos2d::ccp(0,@win_size.height-30))
+    item.setAnchorPoint(ccp(0,0))
+    item.setPosition(ccp(0,@win_size.height-30))
     item.registerScriptTapHandler do
       @ws.close
       Cocos2dx.reboot!
@@ -89,7 +89,7 @@ class WsApp
     log("onTouchBegan: #{point.x},#{point.y}")
 
     name = ["Icon-57.png","Icon-72.png","Icon-114.png","Icon-144.png"].sample
-    @ws.send(JSON::stringify({handle: @handle, text:"TAP(#{point.x},#{point.y})", tap:{x:point.x, y:point.y, index:@my_index}}))
+    @ws.send(JSON::stringify({handle: @handle, text:"TAP(#{point.x},#{point.y})", tap:{x:point.x, y:point.y, index:@my_index}})) if @ws
 
     return true
   end
@@ -109,10 +109,10 @@ class WsApp
 end
 
 begin
-  d = Cocos2d::CCDirector.sharedDirector
-  view = Cocos2d::CCEGLView.sharedOpenGLView
+  d = CCDirector.sharedDirector
+  view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2d::KResolutionExactFit)
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
   d.setDisplayStats(true)
   app = WsApp.new
   d.pushScene(app.scene.cc_object)
