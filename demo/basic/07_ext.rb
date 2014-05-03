@@ -4,6 +4,16 @@ class ExtApp
     @win_size = CCDirector.sharedDirector.getWinSize
     @scene = Scene.new
 
+    @scene.addChild(_create_swipe_recognizer)
+
+    @log_layer = LogLayer.new(30)
+    @scene.addChild(@log_layer)
+    Logger.add(@log_layer)
+
+    log "swipe!"
+  end
+
+  def _create_swipe_recognizer
     swipe_recognizer = CCSwipeGestureRecognizerForScript.create
     swipe_recognizer.setDirection(
       KSwipeGestureRecognizerDirectionRight |
@@ -19,13 +29,7 @@ class ExtApp
         reboot!
       end
     end
-    @scene.addChild(swipe_recognizer)
-
-    @log_layer = LogLayer.new(30)
-    @scene.addChild(@log_layer)
-    Logger.add(@log_layer)
-
-    log "swipe!"
+    swipe_recognizer
   end
 end
 

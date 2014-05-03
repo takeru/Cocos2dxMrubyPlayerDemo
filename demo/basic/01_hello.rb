@@ -1,5 +1,5 @@
 puts 'hello!!'
-include Cocos2dx
+
 d = CCDirector.sharedDirector
 win_size = d.getWinSize
 sprite = CCSprite.create("Icon-114.png")

@@ -71,7 +71,7 @@ class Box2dApp
         h = 100.0 * (0.1 + rand) / $box2d_to_pixel,
         a = 360 * rand,
         d = 0.1 + rand,
-        [rand,rand,rand]
+        [0.3+rand*0.7,0.3+rand*0.7,0.3+rand*0.7]
       )
       @layer.addChild(box)
       @boxes << box
@@ -81,7 +81,7 @@ class Box2dApp
     @scene.addChild(@layer)
 
     @layer.scheduleUpdateWithPriorityLua(1) do |dt,node|
-      @world.step(dt, 10, 10)
+      @world.step(dt, 8, 3)
       @boxes.each do |box|
         box.update
       end
@@ -112,15 +112,12 @@ class Box2dApp
   }
 
   def _create_box(type, x, y, width, height, angle, density, color)
-    @bd  ||= Box2D::B2BodyDef.new
-    @vec ||= Box2D::B2Vec2.new
+    bd = Box2D::B2BodyDef.new
+    bd.type = B2BodyType_Map[type]
+    bd.position = Box2D::B2Vec2.new(x, y)
+    bd.angle = angle
+    body = @world.createBody(bd)
 
-    @bd.type = B2BodyType_Map[type]
-    @vec.x = x
-    @vec.y = y
-    @bd.position = @vec
-    @bd.angle = angle
-    body = @world.createBody(@bd)
     shape = Box2D::B2PolygonShape.new
     shape.setAsBox(width/2,height/2)
     fixture = body.createFixture(shape, density)

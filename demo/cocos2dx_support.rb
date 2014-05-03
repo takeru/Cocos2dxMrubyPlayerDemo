@@ -41,7 +41,7 @@ module Cocos2dx
     end
   end
 
-  Callback.removeScriptObject = proc do |cc_obj|
+  Callback.remove_script_object do |cc_obj|
     WrapObjects.remove(cc_obj)
   end
 
@@ -236,12 +236,17 @@ module Cocos2dx
     end
   end
 
-  Callback.uncaughtException = proc do |e,bt|
+  Callback.uncaught_exception do |e,bt|
     s = "Exception: #{e.inspect}\n"
     bt.each do |b|
       s << "  #{b}\n"
     end if bt
     log(s)
+  end
+
+  Callback.before_shutdown do
+    log("before_shutdown")
+    Cocos2dx::Logger.cleanup
   end
 
   class CCSize
@@ -262,7 +267,6 @@ module ::Kernel
     Cocos2dx::Logger.log(s)
   end
   def reboot!
-    Cocos2dx::Logger.cleanup
     Cocos2dxMrubyPlayer.reboot!
   end
 end
