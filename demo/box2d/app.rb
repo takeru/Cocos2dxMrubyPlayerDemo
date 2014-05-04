@@ -1,6 +1,4 @@
-
 $box2d_to_pixel = 80.0
-$view_point = CCPoint.new
 
 class Box < DrawNode
   def initialize
@@ -11,16 +9,23 @@ class Box < DrawNode
   def update
     pos = @body.getPosition
     setPosition(
-      pos.x * $box2d_to_pixel + $view_point.x,
-      pos.y * $box2d_to_pixel + $view_point.y
+      pos.x * $box2d_to_pixel,
+      pos.y * $box2d_to_pixel
     )
     setRotation(-@body.getAngle * 180 / 3.141592)
+
+    if pos.y < -100
+      return false
+    else
+      return true
+    end
   end
 end
 
 class Box2dApp
   attr_reader :scene
   def initialize
+    @touches = {}
     _create_scene
   end
 
@@ -28,8 +33,8 @@ class Box2dApp
     @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
-
-    @layer.registerScriptTouchHandler do |eventType, touch|
+    @layer.setTouchMode(KCCTouchesOneByOne) # KCCTouchesAllAtOnce
+    @layer.registerScriptTouchHandler(false) do |eventType, touch|
       case eventType
       when CCTOUCHBEGAN
         onTouchBegan(touch)
@@ -40,31 +45,52 @@ class Box2dApp
       when CCTOUCHCANCELLED
         onTouchCanceled(touch)
       else
-        raise "unknown eventType=#{eventType} touch=#{touch}"
+        raise "unknown eventType=#{eventType} touches=#{touches.inspect}"
       end
     end
-    @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
-
-    @layer.addChild(_create_reboot_menu)
 
     # box2d
     width  = @win_size.width  / $box2d_to_pixel
     height = @win_size.height / $box2d_to_pixel
     @world = Box2D::B2World.new(Box2D::B2Vec2.new(0,-9.8))
-    @ground = _create_box(:static,
+
+    ground0 = _create_box(:static,
       x = width/2,
       y = 0.10,
       w = width * 0.8,
-      h = 100.0 * (0.10) / $box2d_to_pixel,
+      h = 100.0 * (0.50) / $box2d_to_pixel,
       a = 0,
       d = 0,
       [1.0,1.0,1.0]
     )
-    @layer.addChild(@ground)
-    @boxes = []
-    100.times do
-      box = _create_box(:dynamic,
+    @layer.addChild(ground0)
+
+    ground1 = _create_box(:static,
+      x = width*-1.3,
+      y = -50.0,
+      w = width * 0.8,
+      h = 100.0 * (0.30) / $box2d_to_pixel,
+      a = 0,
+      d = 0,
+      [1.0,1.0,1.0]
+    )
+    @layer.addChild(ground1)
+
+    ground2 = _create_box(:static,
+      x = width*1.3,
+      y = -30.0,
+      w = width * 0.8,
+      h = 100.0 * (0.30) / $box2d_to_pixel,
+      a = 0,
+      d = 0,
+      [1.0,1.0,1.0]
+    )
+    @layer.addChild(ground2)
+
+
+    create_box = proc do
+      _create_box(:dynamic,
         x = rand*width,
         y = rand*height*3 + 5,
         w = 100.0 * (0.1 + rand) / $box2d_to_pixel,
@@ -73,6 +99,11 @@ class Box2dApp
         d = 0.1 + rand,
         [0.3+rand*0.7,0.3+rand*0.7,0.3+rand*0.7]
       )
+    end
+
+    @boxes = []
+    100.times do
+      box = create_box.call
       @layer.addChild(box)
       @boxes << box
     end
@@ -83,10 +114,21 @@ class Box2dApp
     @layer.scheduleUpdateWithPriorityLua(1) do |dt,node|
       @world.step(dt, 8, 3)
       @boxes.each do |box|
-        box.update
+        unless box.update
+          @world.destroyBody(box.body)
+          box.removeFromParentAndCleanup(true)
+          @boxes.delete(box)
+
+          box = create_box.call
+          @layer.addChild(box)
+          @boxes << box
+        end
       end
-      @ground.update
     end
+
+    layer0 = Layer.new
+    layer0.addChild(_create_reboot_menu)
+    @scene.addChild(layer0)
 
     nil
   end
@@ -140,27 +182,57 @@ class Box2dApp
   end
 
   def onTouchBegan(touch)
-    point = @layer.convertTouchToNodeSpace(touch)
-    #log("onTouchBegan: #{point.x},#{point.y}")
-
-    @touching_point = point
-    return true
+    if @touches.size < 2
+      @touches[touch.getID] = touch.getLocation
+      return true
+    end
+    return false
   end
 
   def onTouchMoved(touch)
-    point = @layer.convertTouchToNodeSpace(touch)
-    #log("onTouchMoved: #{point.x},#{point.y}")
+    if @touches.size == 1
+      if @touches[touch.getID]
+        p0 = touch.getPreviousLocation # @layer.convertToNodeSpace
+        p1 = touch.getLocation
+        pos = @layer.getPosition
+        pos.x += p1.x - p0.x
+        pos.y += p1.y - p0.y
+        @layer.setPosition(pos)
+        @touches[touch.getID] = touch.getLocation
+      end
+    elsif @touches.size == 2
+      a0 = @touches[0]
+      b0 = @touches[1]
+      c0 = CCPoint.new((a0.x+b0.x)/2,(a0.y+b0.y)/2)
+      l0 = Math.sqrt((a0.x-b0.x)**2 + (a0.y-b0.y)**2)
 
-    $view_point.x += point.x - @touching_point.x
-    $view_point.y += point.y - @touching_point.y
-    @touching_point = point
+      @touches[touch.getID] = touch.getLocation
+
+      a1 = @touches[0]
+      b1 = @touches[1]
+      c1 = CCPoint.new((a1.x+b1.x)/2,(a1.y+b1.y)/2)
+      l1 = Math.sqrt((a1.x-b1.x)**2 + (a1.y-b1.y)**2)
+
+      pos = @layer.getPosition
+      pos.x += c1.x - c0.x
+      pos.y += c1.y - c0.y
+      pos.x *= l1/l0
+      pos.y *= l1/l0
+      @layer.setPosition(pos)
+
+      scale = @layer.getScale * l1/l0
+      @layer.setScale(scale)
+    else
+      log "@touches.size = #{@touches.size}"
+    end
   end
 
   def onTouchEnded(touch)
-    #point = @layer.convertTouchToNodeSpace(touch)
-    #log("onTouchEnded: #{point.x},#{point.y}")
+    @touches.delete(touch.getID)
+  end
 
-    @touching_point = nil
+  def onTouchCanceled(touch)
+    onTouchEnded(touch)
   end
 end
 
