@@ -1,13 +1,10 @@
+fu = CCFileUtils.sharedFileUtils
+fu.addSearchPath(fu.fullPathFromRelativeFile("resources", fu.fullPathForFilename(__FILE__)))
+
 RATE = 45
 
-CCFileUtils.sharedFileUtils.removeAllPaths
-CCFileUtils.sharedFileUtils.addSearchPath(Cocos2dxMrubyPlayer.dropbox_root_path + "demo/kani/resources")
-CCFileUtils.sharedFileUtils.getSearchPaths.each_with_index do |path,i|
-  log "SearchPaths[#{i}]:#{path}"
-end
-
 %w(bg stage kani player).each do |x|
-  Cocos2dxMrubyPlayer.load("$DB/demo/kani/#{x}.rb")
+  Cocos2dxMrubyPlayer.load("demo/kani/#{x}.rb")
 end
 
 class KaniApp

@@ -1,8 +1,5 @@
-CCFileUtils.sharedFileUtils.removeAllPaths
-CCFileUtils.sharedFileUtils.addSearchPath(Cocos2dxMrubyPlayer.dropbox_root_path + "demo/nyangame/resources")
-CCFileUtils.sharedFileUtils.getSearchPaths.each_with_index do |path,i|
-  log "SearchPaths[#{i}]:#{path}"
-end
+fu = CCFileUtils.sharedFileUtils
+fu.addSearchPath(fu.fullPathFromRelativeFile("resources", fu.fullPathForFilename(__FILE__)))
 
 class Block < Sprite
   attr_reader :color
