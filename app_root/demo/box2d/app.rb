@@ -33,6 +33,9 @@ class Box2dApp
     @win_size = CCDirector.sharedDirector.getWinSize
 
     @layer = Layer.new
+    @layer.setPosition(1.9833,168.662)
+    @layer.setScale(0.1045)
+
     @layer.setTouchMode(KCCTouchesOneByOne) # KCCTouchesAllAtOnce
     @layer.registerScriptTouchHandler(false) do |eventType, touch|
       case eventType
@@ -222,6 +225,8 @@ class Box2dApp
 
       scale = @layer.getScale * l1/l0
       @layer.setScale(scale)
+
+      #log "pos=#{pos.x},#{pos.y} scale=#{scale}"
     else
       log "@touches.size = #{@touches.size}"
     end
