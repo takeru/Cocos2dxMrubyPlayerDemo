@@ -22,6 +22,8 @@ def intro
   layer.registerScriptTouchHandler do |eventType, touch|
     reboot!
   end
+  layer.setTouchMode(KCCTouchesOneByOne)
+  layer.setTouchEnabled(true)
 
   font = nil
   size = 30
@@ -66,7 +68,12 @@ def menu_app_on_dropbox
   Cocos2dxMrubyPlayer.load("$DB/app_root/demo/menu.rb")
 end
 
+def goto_app_boot
+  raise "!!! goto $APP/boot.rb !!!"
+end
+
 # call one of methods above.
 intro
 #hello
 #menu_app_on_dropbox
+#goto_app_boot
