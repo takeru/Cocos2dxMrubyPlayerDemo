@@ -1,7 +1,7 @@
 class Player < Sprite
   def initialize
     @cc_class_name = 'CCSprite'
-    tex = CCTextureCache.sharedTextureCache.addImage($resources_path + "vx_chara03_a.png")
+    tex = CCTextureCache.sharedTextureCache.addImage("vx_chara03_a.png")
     rect = cCRectMake(0,0,0,0)
     super(:WithTexture, tex, rect)
 

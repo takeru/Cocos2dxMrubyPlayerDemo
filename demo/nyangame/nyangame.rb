@@ -1,11 +1,15 @@
-$resources_path = Cocos2dxMrubyPlayer.root_path + "demo/nyangame/resources/"
+CCFileUtils.sharedFileUtils.removeAllPaths
+CCFileUtils.sharedFileUtils.addSearchPath(Cocos2dxMrubyPlayer.dropbox_root_path + "demo/nyangame/resources")
+CCFileUtils.sharedFileUtils.getSearchPaths.each_with_index do |path,i|
+  log "SearchPaths[#{i}]:#{path}"
+end
 
 class Block < Sprite
   attr_reader :color
   attr_accessor :next_x, :next_y
   def initialize(color)
     @cc_class_name = 'CCSprite'
-    super($resources_path + color.to_s + ".png")
+    super(color.to_s + ".png")
 
     @color = color
     @next_x = -1
@@ -37,7 +41,7 @@ class NyanGame
   COLORS = [:red, :blue, :yellow, :green, :gray]
   BLOCK_MAX_X = 8
   BLOCK_MAX_Y = 8
-  MP3_REMOVE_BLOCK = $resources_path + "removeBlock.mp3"
+  MP3_REMOVE_BLOCK = "removeBlock.mp3"
   REMOVEING_TIME = 0.1
   MOVING_TIME_1  = 0.2
   MOVING_TIME_2  = 0.2
@@ -72,7 +76,7 @@ class NyanGame
     @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
 
-    @bg = Sprite.new($resources_path + "background.png")
+    @bg = Sprite.new("background.png")
     @bg.setPosition(@win_size.width/2, @win_size.height/2)
     @layer.addChild(@bg, ZORDER[:bg], TAG[:bg])
 
@@ -127,18 +131,18 @@ class NyanGame
       :gray   => 0.21
     }
     COLORS.each do |color|
-      label = LabelBMFont.new("", $resources_path + "#{color}Font.fnt")
+      label = LabelBMFont.new("", "#{color}Font.fnt")
       label.setPosition(ccp(bg_size.width * 0.78, bg_size.height * height_rates[color]))
       @bg.addChild(label, ZORDER[:label], TAG[:"label_#{color}"])
     end
 
     # score
-    label = LabelBMFont.new("", $resources_path + "whiteFont.fnt")
+    label = LabelBMFont.new("", "whiteFont.fnt")
     label.setPosition(ccp(bg_size.width * 0.78, bg_size.height * 0.75))
     @bg.addChild(label, ZORDER[:label], TAG[:label_score])
 
     # highscore
-    label = LabelBMFont.new("", $resources_path + "whiteFont.fnt")
+    label = LabelBMFont.new("", "whiteFont.fnt")
     label.setPosition(ccp(bg_size.width * 0.78, bg_size.height * 0.87))
     @bg.addChild(label, ZORDER[:label], TAG[:label_highscore])
   end
@@ -164,7 +168,7 @@ class NyanGame
     def _create_menus
       bg_size = @bg.getContentSize
 
-      reset_button = MenuItemImage.new($resources_path + "reset1.png", $resources_path + "reset1.png")
+      reset_button = MenuItemImage.new("reset1.png", "reset1.png")
       reset_button.setPosition(ccp(bg_size.width * 0.78, bg_size.height * 0.1))
       reset_button.registerScriptTapHandler do
         _reset
@@ -327,7 +331,7 @@ class NyanGame
 
         bg_size = @bg.getContentSize
 
-        @gameover = Sprite.new($resources_path + "gameover.png")
+        @gameover = Sprite.new("gameover.png")
         @gameover.setPosition(ccp(bg_size.width * 0.5, bg_size.height * 0.8))
         @bg.addChild(@gameover, ZORDER[:gameover], TAG[:gameover])
 

@@ -1,7 +1,7 @@
 class Kani < Sprite
   def initialize
     @cc_class_name = 'CCSprite'
-    super($resources_path + "kani.png")
+    super("kani.png")
     if false
       registerScriptHandler do |node, action|
         case action

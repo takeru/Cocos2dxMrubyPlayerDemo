@@ -1,7 +1,12 @@
-Cocos2dxMrubyPlayer.load("demo/cocos2dx_support.rb")
+Cocos2dxMrubyPlayer.load("$DB/demo/cocos2dx_support.rb")
 Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 log "==== cocos2dx.rb loaded. ===="
 include Cocos2dx
+CCFileUtils.sharedFileUtils.removeAllPaths
+CCFileUtils.sharedFileUtils.addSearchPath("")
+CCFileUtils.sharedFileUtils.getSearchPaths.each_with_index do |path,i|
+  log "SearchPaths[#{i}]:#{path}"
+end
 
 class MenuApp
   attr_reader :scene
@@ -11,44 +16,54 @@ class MenuApp
 
   def _create_scene
     @win_size = CCDirector.sharedDirector.getWinSize
-
     @layer = Layer.new
 
     menu = Menu.new
     menu.setPosition(0,0)
-    filenames = [
-      "basic/01_hello.rb",
-      "basic/02_sprite.rb",
-      "basic/03_touch.rb",
-      "basic/04_multi_touch.rb",
-      "basic/05_drawnode.rb",
-      "basic/06_update.rb",
-      "basic/07_ext.rb",
-      "basic/08_labelttf.rb",
-      "nyangame/nyangame.rb",
-      "kani/app.rb",
-      "websocket/app.rb",
-      "box2d/app.rb"
-    ]
+    menus = {
+      "Hello"      =>{:load=>"$DB/demo/basic/01_hello.rb"      },
+      "Sprite"     =>{:load=>"$DB/demo/basic/02_sprite.rb"     },
+      "Touch"      =>{:load=>"$DB/demo/basic/03_touch.rb"      },
+      "MultiTouch" =>{:load=>"$DB/demo/basic/04_multi_touch.rb"},
+      "DrawNode"   =>{:load=>"$DB/demo/basic/05_drawnode.rb"   },
+      "Update"     =>{:load=>"$DB/demo/basic/06_update.rb"     },
+      "Ext"        =>{:load=>"$DB/demo/basic/07_ext.rb"        },
+      "LabelTTF"   =>{:load=>"$DB/demo/basic/08_labelttf.rb"   },
+      "NyanGame"   =>{:load=>"$DB/demo/nyangame/nyangame.rb"   },
+      "Kani"       =>{:load=>"$DB/demo/kani/app.rb"            },
+      "WebSocket"  =>{:load=>"$DB/demo/websocket/app.rb"       },
+      "Box2d"      =>{:load=>"$DB/demo/box2d/app.rb"           },
+      "GitHub"     =>{:url =>"https://github.com/takeru/Cocos2dxMrubyPlayerDemo"},
+      "TestFlight" =>{:url =>"https://testflightapp.com/m/apps"},
+    }
 
-    rows = 6
-    cols = 3
-    filenames.each_with_index do |filename, index|
-      item = MenuItemFont.new(filename)
+    rows = 3
+    cols = 8
+    index = 0
+    menus.each do |text,action|
+      item = MenuItemFont.new(text)
+      item.setFontSizeObj(50)
       item.setAnchorPoint(ccp(0,0))
+      col = (index/rows).floor
+      row =  index%rows
       item.setPosition(ccp(
-        10+(index/rows).floor*(@win_size.width/cols),
-        @win_size.height - (@win_size.height/rows) * (0.5+index%rows)
+        30+col*(@win_size.width/cols),
+        @win_size.height - (@win_size.height/rows) * (0.3+row + 0.5*(col%2))
       ))
       item.registerScriptTapHandler do
-        log "Menu: #{filename} selected."
+        log "Menu: #{text} selected."
         begin
-          Cocos2dxMrubyPlayer.load("demo/"+filename)
+          if action[:load]
+            Cocos2dxMrubyPlayer.load(action[:load])
+          elsif action[:url]
+            Cocos2dxMrubyPlayer.open_url(action[:url])
+          end
         rescue => e
-          log "failed to load '#{filename}'. e=#{e.inspect}"
+          log "failed to load '#{text}'. e=#{e.inspect}"
         end
       end
       menu.addChild(item)
+      index += 1
     end
     @layer.addChild(menu)
 

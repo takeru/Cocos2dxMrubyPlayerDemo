@@ -1,4 +1,9 @@
-$resources_path = Cocos2dxMrubyPlayer.root_path + "demo/websocket/resources/"
+CCFileUtils.sharedFileUtils.removeAllPaths
+CCFileUtils.sharedFileUtils.addSearchPath("")
+CCFileUtils.sharedFileUtils.addSearchPath(Cocos2dxMrubyPlayer.dropbox_root_path + "demo/websocket/resources")
+CCFileUtils.sharedFileUtils.getSearchPaths.each_with_index do |path,i|
+  log "SearchPaths[#{i}]:#{path}"
+end
 
 class WsApp
   attr_reader :scene
@@ -8,11 +13,11 @@ class WsApp
     @handle = (1000 + rand(9000)).to_s
 
     @sound_and_icons = [
-      [$resources_path + "blip2.mp3",  $resources_path + "block-blue-hd.png"],
-      [$resources_path + "bomb.mp3",   $resources_path + "block-green-hd.png"],
-      [$resources_path + "coin07.mp3", $resources_path + "block-red-hd.png"],
-      [$resources_path + "jump01.mp3", $resources_path + "block-yellow-hd.png"],
-      [$resources_path + "laser3.mp3", "Icon-57.png"]
+      ["blip2.mp3",  "block-blue-hd.png"],
+      ["bomb.mp3",   "block-green-hd.png"],
+      ["coin07.mp3", "block-red-hd.png"],
+      ["jump01.mp3", "block-yellow-hd.png"],
+      ["laser3.mp3", "Icon-57.png"]
     ]
     @my_index = rand(@sound_and_icons.size) 
   end

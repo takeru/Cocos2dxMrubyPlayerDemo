@@ -1,1 +1,1 @@
-Cocos2dxMrubyPlayer.load("demo/menu.rb")
+Cocos2dxMrubyPlayer.load("$DB/demo/menu.rb")

@@ -39,7 +39,7 @@ class Stage < Layer
       [3,   0, 5.0],
       [3, 568, 5.0]
       ].map do |n, x, speed|
-      bg = Bg.new($resources_path + "main_bg_0#{n}.png", x, speed)
+      bg = Bg.new("main_bg_0#{n}.png", x, speed)
       self.addChild(bg, zorder.send("bg#{n}"))
       bg
     end
@@ -69,7 +69,7 @@ class Stage < Layer
 
   def onTouchBegan(touch)
     if @player.jump_begin
-      CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect($resources_path + "complete.wav")
+      CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect("complete.wav")
     end
     return false
   end
@@ -86,7 +86,7 @@ class Stage < Layer
         kani.reset
         @score += 1
         #refresh_score
-        CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect($resources_path + "blip.wav")
+        CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect("blip.wav")
       end
       if @player.boundingBox.intersectsRect(kani.boundingBox)
         gameover
@@ -99,7 +99,7 @@ class Stage < Layer
   end
 
   def gameover
-    CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect($resources_path + "reset.wav")
+    CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect("reset.wav")
 
     if true
       reboot!

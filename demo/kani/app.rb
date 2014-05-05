@@ -1,8 +1,13 @@
-$resources_path = Cocos2dxMrubyPlayer.root_path + "demo/kani/resources/"
 RATE = 45
 
+CCFileUtils.sharedFileUtils.removeAllPaths
+CCFileUtils.sharedFileUtils.addSearchPath(Cocos2dxMrubyPlayer.dropbox_root_path + "demo/kani/resources")
+CCFileUtils.sharedFileUtils.getSearchPaths.each_with_index do |path,i|
+  log "SearchPaths[#{i}]:#{path}"
+end
+
 %w(bg stage kani player).each do |x|
-  Cocos2dxMrubyPlayer.load("demo/kani/#{x}.rb")
+  Cocos2dxMrubyPlayer.load("$DB/demo/kani/#{x}.rb")
 end
 
 class KaniApp
@@ -19,9 +24,9 @@ class KaniApp
     @scene = Scene.new
     @scene.addChild(@stage)
 
-    CocosDenshion::SimpleAudioEngine.sharedEngine.preloadEffect $resources_path + 'complete.wav'
-    CocosDenshion::SimpleAudioEngine.sharedEngine.preloadEffect $resources_path + 'blip.wav'
-    CocosDenshion::SimpleAudioEngine.sharedEngine.preloadEffect $resources_path + 'reset.wav'
+    CocosDenshion::SimpleAudioEngine.sharedEngine.preloadEffect 'complete.wav'
+    CocosDenshion::SimpleAudioEngine.sharedEngine.preloadEffect 'blip.wav'
+    CocosDenshion::SimpleAudioEngine.sharedEngine.preloadEffect 'reset.wav'
   end
 end
 
