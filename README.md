@@ -9,6 +9,7 @@ Cocos2dxMrubyPlayerDemo
   $ cd path-to/DropBox/.../Cocos2dxMrubyPlayer
   $ git init --separate-git-dir=/Users/yourname/Documents/Cocos2dxMrubyPlayer.separate-git-dir
   $ git remote add -f origin git@github.com:takeru/Cocos2dxMrubyPlayerDemo.git
+  $ git checkout master
   $ ls -a1
     .
     ..
