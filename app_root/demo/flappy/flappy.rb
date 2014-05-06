@@ -16,6 +16,7 @@ class FlappyApp
 
     @bird  = Bird.new
     @bird.setPosition(@win_size.width/2, @win_size.height/2)
+    @vy = 0
 
     @layer = Layer.new
     @layer.addChild(@bird)
@@ -40,9 +41,7 @@ class FlappyApp
   end
 
   def onTouchBegan(touch)
-    pos = @bird.getPosition
-    pos.y += 100
-    @bird.setPosition(pos)
+    @vy = 1500
     return true
   end
 
@@ -53,10 +52,16 @@ class FlappyApp
   end
 
   def update(dt)
+    @vy -= 100
     pos = @bird.getPosition
-    pos.y -= 400 * dt
+    pos.y += @vy * dt
     if pos.y < 100
       pos.y = 100
+      @vy = 0
+    end
+    if 550 < pos.y
+      pos.y = 550
+      @vy = 0
     end
     @bird.setPosition(pos)
   end
