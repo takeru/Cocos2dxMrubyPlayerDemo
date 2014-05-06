@@ -33,6 +33,10 @@ class FlappyApp
     end
     @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
+
+    @layer.scheduleUpdateWithPriorityLua(1) do |dt,node|
+      update(dt)
+    end
   end
 
   def onTouchBegan(touch)
@@ -43,8 +47,17 @@ class FlappyApp
   end
 
   def onTouchEnd(touch)
+    #pos = @bird.getPosition
+    #pos.y -= 100
+    #@bird.setPosition(pos)
+  end
+
+  def update(dt)
     pos = @bird.getPosition
-    pos.y -= 100
+    pos.y -= 400 * dt
+    if pos.y < 100
+      pos.y = 100
+    end
     @bird.setPosition(pos)
   end
 end
