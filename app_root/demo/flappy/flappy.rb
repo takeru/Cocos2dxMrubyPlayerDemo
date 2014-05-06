@@ -22,6 +22,30 @@ class FlappyApp
 
     @scene = Scene.new
     @scene.addChild(@layer)
+
+    @layer.registerScriptTouchHandler do |eventType, touch|
+      case eventType
+      when CCTOUCHBEGAN
+        onTouchBegan(touch)
+      when CCTOUCHENDED
+        onTouchEnd(touch)
+      end
+    end
+    @layer.setTouchMode(KCCTouchesOneByOne)
+    @layer.setTouchEnabled(true)
+  end
+
+  def onTouchBegan(touch)
+    pos = @bird.getPosition
+    pos.y += 100
+    @bird.setPosition(pos)
+    return true
+  end
+
+  def onTouchEnd(touch)
+    pos = @bird.getPosition
+    pos.y -= 100
+    @bird.setPosition(pos)
   end
 end
 
