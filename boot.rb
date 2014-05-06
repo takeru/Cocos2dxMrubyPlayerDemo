@@ -10,6 +10,8 @@ App boot sequence:
 You can edit this file on dropbox, then file on device is updated too.
 
 All code examples are here: https://github.com/takeru/Cocos2dxMrubyPlayerDemo
+
+Tap to go menu.
 END
 
 def intro
@@ -20,7 +22,7 @@ def intro
   scene = Scene.new
   layer = Layer.new
   layer.registerScriptTouchHandler do |eventType, touch|
-    reboot!
+    Cocos2dxMrubyPlayer.load("$DB/app_root/demo/menu.rb")
   end
   layer.setTouchMode(KCCTouchesOneByOne)
   layer.setTouchEnabled(true)
