@@ -3,7 +3,9 @@ fu = CCFileUtils.sharedFileUtils
 fu.addSearchPath(fu.fullPathFromRelativeFile("../..", __FILE__))
 fu.addSearchPath(fu.fullPathFromRelativeFile(".",     __FILE__))
 Cocos2dxMrubyPlayer.load("lib/cocos2dx_support.rb")
-Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+wsurl = "ws://192.168.0.7:9292"
+puts "connecting to: #{wsurl}"
+Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new(wsurl))
 log "SearchPaths: #{fu.getSearchPaths.inspect}"
 
 Cocos2dxMrubyPlayer.load("bird.rb")
@@ -12,11 +14,12 @@ class FlappyApp
   def initialize
     log "FlappyApp#initialize"
     @win_size = CCDirector.sharedDirector.getWinSize
-    log @win_size
+    log "@win_size=#{@win_size}"
 
     @bird  = Bird.new
     @bird.setPosition(@win_size.width/2, @win_size.height/2)
     @vy = 0
+    log "@bird.getContentSize=#{@bird.getContentSize}"
 
     @layer = Layer.new
     @layer.addChild(@bird)
@@ -41,26 +44,24 @@ class FlappyApp
   end
 
   def onTouchBegan(touch)
+    log "touch"
     @vy = 1500
     return true
   end
 
   def onTouchEnd(touch)
-    #pos = @bird.getPosition
-    #pos.y -= 100
-    #@bird.setPosition(pos)
   end
 
   def update(dt)
     @vy -= 100
     pos = @bird.getPosition
     pos.y += @vy * dt
-    if pos.y < 100
-      pos.y = 100
+    if pos.y < 0
+      pos.y = 0
       @vy = 0
     end
-    if 550 < pos.y
-      pos.y = 550
+    if 640 < pos.y
+      pos.y = 640
       @vy = 0
     end
     @bird.setPosition(pos)
