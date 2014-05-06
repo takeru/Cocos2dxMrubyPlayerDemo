@@ -5,8 +5,8 @@ fu.addSearchPath(fu.fullPathFromRelativeFile(""))
 #fu.getSearchPaths.each_with_index do |path,i|
 #  puts "SearchPaths[#{i}]:#{path}"
 #end
-Cocos2dxMrubyPlayer.load("demo/cocos2dx_support.rb")
-Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+Cocos2dxMrubyPlayer.load("lib/cocos2dx_support.rb")
+#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 
 class MenuApp
   attr_reader :scene
@@ -44,7 +44,6 @@ class MenuApp
     menus.each do |text,action|
       item = MenuItemFont.new(text)
       item.setFontSizeObj(50)
-      #item.setAnchorPoint(ccp(0,0))
       col = (index/rows).floor
       row =  index%rows
       item.setPosition(
@@ -70,8 +69,6 @@ class MenuApp
 
     @scene = Scene.new
     @scene.addChild(@layer)
-
-    nil
   end
 end
 
@@ -80,8 +77,6 @@ begin
   view = Cocos2dx::CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
   view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
-  #CCEGLView.sharedOpenGLView.setDesignResolutionSize(480*2,320*2,KResolutionExactFit)
-  #d.setContentScaleFactor(1.0)
   d.setDisplayStats(false)
   app = MenuApp.new
   d.pushScene(app.scene.cc_object)

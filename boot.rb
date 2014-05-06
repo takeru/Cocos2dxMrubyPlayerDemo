@@ -13,7 +13,7 @@ All code examples are here: https://github.com/takeru/Cocos2dxMrubyPlayerDemo
 END
 
 def intro
-  Cocos2dxMrubyPlayer.load("$APP/demo/cocos2dx_support.rb")
+  Cocos2dxMrubyPlayer.load("$APP/lib/cocos2dx_support.rb")
   include Cocos2dx
 
   win_size = CCDirector.sharedDirector.getWinSize

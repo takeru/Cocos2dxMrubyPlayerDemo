@@ -1,4 +1,0 @@
-TODO
- - release Box2d
- - check args value type.
- 
