@@ -15,6 +15,13 @@ class MenuApp
   end
 
   def _create_scene
+    app_or_dbx = "?"
+    if __FILE__.include?("Documents/dropbox_root")
+      app_or_dbx = "Dbx"
+    elsif __FILE__.include?(".app/app_root")
+      app_or_dbx = "App"
+    end
+
     @win_size = CCDirector.sharedDirector.getWinSize
     @layer = Layer.new
 
@@ -36,6 +43,7 @@ class MenuApp
       "*GitHub"    =>{:url =>"https://github.com/takeru/Cocos2dxMrubyPlayerDemo"},
       "*TestFlight"=>{:url =>"https://testflightapp.com/m/apps"},
       "*Setup"     =>{:load=>"setup/app.rb"                },
+      "*(#{app_or_dbx})" =>{},
     }
 
     rows = 3
