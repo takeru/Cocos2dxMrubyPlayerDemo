@@ -15,19 +15,15 @@ class MenuApp
   end
 
   def _create_scene
-    app_or_dbx = "?"
-    if __FILE__.include?("Documents/dropbox_root")
-      app_or_dbx = "Dbx"
-    elsif __FILE__.include?(".app/app_root")
-      app_or_dbx = "App"
-    end
-
     @win_size = CCDirector.sharedDirector.getWinSize
     @layer = Layer.new
 
     menu = Menu.new
     menu.setPosition(0,0)
     menus = {
+      "*Setup"     =>{:load=>"setup/app.rb"                },
+      "*GitHub"    =>{:url =>"https://github.com/takeru/Cocos2dxMrubyPlayerDemo"},
+      "*TestFlight"=>{:url =>"https://testflightapp.com/m/apps"},
       "Hello"      =>{:load=>"demo/basic/01_hello.rb"      },
       "Sprite"     =>{:load=>"demo/basic/02_sprite.rb"     },
       "Touch"      =>{:load=>"demo/basic/03_touch.rb"      },
@@ -40,24 +36,19 @@ class MenuApp
       "Kani"       =>{:load=>"demo/kani/app.rb"            },
       "WebSocket"  =>{:load=>"demo/websocket/app.rb"       },
       "Box2d"      =>{:load=>"demo/box2d/app.rb"           },
-      "*GitHub"    =>{:url =>"https://github.com/takeru/Cocos2dxMrubyPlayerDemo"},
-      "*TestFlight"=>{:url =>"https://testflightapp.com/m/apps"},
-      "*Setup"     =>{:load=>"setup/app.rb"                },
-      "*(#{app_or_dbx})" =>{},
     }
 
-    rows = 3
-    cols = 8
+    items_in_row = 3
+    rows = 8
     index = 0
     menus.each do |text,action|
       item = MenuItemFont.new(text)
       item.setFontSizeObj(50)
-      col = (index/rows).floor
-      row =  index%rows
-      item.setPosition(
-        (1+col)*(@win_size.width/cols),
-        @win_size.height - (@win_size.height/rows) * (0.2+row + 0.5*(col%2))
-      )
+      row = (index/items_in_row).floor
+      col = index%items_in_row
+      x = (0.5+col)*(@win_size.width/items_in_row)
+      y = @win_size.height - (@win_size.height/rows) * (0.5+row)
+      item.setPosition(x, y)
       item.registerScriptTapHandler do
         log "Menu: #{text} selected."
         begin
@@ -74,6 +65,16 @@ class MenuApp
       index += 1
     end
     @layer.addChild(menu)
+
+    app_or_dbx = "?"
+    if __FILE__.include?("Documents/dropbox_root")
+      app_or_dbx = "Dbx"
+    elsif __FILE__.include?(".app/app_root")
+      app_or_dbx = "App"
+    end
+    label = LabelTTF.new("(this menu is loaded from #{app_or_dbx})", "Marker Felt", 20)
+    label.setPosition(@win_size.width/2,50)
+    @layer.addChild(label)
 
     @scene = Scene.new
     @scene.addChild(@layer)

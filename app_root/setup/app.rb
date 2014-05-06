@@ -14,22 +14,20 @@ class SetupApp
     else
       text = "DropBox: (Not linked)"
     end
-    font = "Marker Felt"
-    size = 50
-    label = LabelTTF.new(text, font, size)
+    label = LabelTTF.new(text, "Marker Felt", 40)
     label.setPosition(@win_size.width/2, @win_size.height-100)
     @layer.addChild(label)
 
     menu = Menu.new
     menu.setPosition(0,0)
     if account
-      item = MenuItemFont.new("Unlink DropBox")
+      item = MenuItemFont.new(">> Unlink DropBox <<")
       item.registerScriptTapHandler do
         Cocos2dxMrubyPlayer::DropBox.unlink
         reboot!
       end
     else
-      item = MenuItemFont.new("Link DropBox")
+      item = MenuItemFont.new(">> Link DropBox <<")
       item.registerScriptTapHandler do
         Cocos2dxMrubyPlayer::DropBox.link
         reboot!
@@ -39,16 +37,21 @@ class SetupApp
     item.setPosition(@win_size.width/2, @win_size.height-200)
     menu.addChild(item)
 
+    label2 = LabelTTF.new("After linked, checkout sample code from github.", "Marker Felt", 30)
+    label2.setPosition(@win_size.width/2, @win_size.height-350)
+    @layer.addChild(label2)
+
     # back
     item2 = MenuItemFont.new("Back")
     item2.registerScriptTapHandler do
       reboot!
     end
-    item2.setFontSizeObj(50)
-    item2.setPosition(@win_size.width/2, @win_size.height-300)
+    item2.setFontSizeObj(40)
+    item2.setPosition(@win_size.width/2, @win_size.height-500)
     menu.addChild(item2)
 
     @layer.addChild(menu)
+
 
     @scene = Scene.new
     @scene.addChild(@layer)
