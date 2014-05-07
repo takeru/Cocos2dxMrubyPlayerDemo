@@ -1,6 +1,6 @@
 begin
 class Wall < DrawNode
-  attr_reader :lower_wall
+  attr_reader :lower_wall, :label
   def initialize(upper)
     @cc_class_name = 'CCDrawNode'
     super()
@@ -12,10 +12,12 @@ class Wall < DrawNode
     @width  = 100
     @height = 400
     @hole   = 300
+    @clear_count = 1
 
     @dy = (@height/2+@hole/2)
     if upper
       @lower_wall = Wall.new(false)
+      @label = LabelTTF.new("#{@clear_count}", "Marker Felt", 40)
     else
       @dy *= -1
     end
@@ -68,10 +70,12 @@ class Wall < DrawNode
       @x = FlappyApp.width
       @y = (rand*2-1) * 150 + FlappyApp.height/2
       levelup = true
+      @clear_count += 1
+      @label.setString(@clear_count)
     end
     setPosition(@x,@y+@dy)
     @lower_wall.setPosition(@x,@y-@dy) if @lower_wall
-
+    @label.setPosition(@x, @y+@hole/2+40) if @label
     return levelup
   end
 

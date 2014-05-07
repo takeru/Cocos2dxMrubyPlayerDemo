@@ -33,6 +33,7 @@ class FlappyApp
     @layer.addChild(@bird)
     @layer.addChild(@wall)
     @layer.addChild(@wall.lower_wall)
+    @layer.addChild(@wall.label)
 
     @scene = Scene.new
     @scene.addChild(@layer)
