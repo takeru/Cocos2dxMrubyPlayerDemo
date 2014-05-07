@@ -19,6 +19,9 @@ class Bird < Sprite
     @vy += -6000 * dt / @easy
     @y += @vy * dt
     setPosition(@x,@y)
+
+    r = Math.atan(-@vy/200)*180/3.141592
+    setRotation((getRotation+r)/2)
   end
 
   def levelup
