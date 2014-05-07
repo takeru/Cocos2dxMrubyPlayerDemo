@@ -69,6 +69,7 @@ class FlappyApp
 
   def update(dt)
     @bird.update(dt)
+    @wall.update(dt)
   end
 
   def width

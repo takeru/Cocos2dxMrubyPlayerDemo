@@ -4,12 +4,12 @@ class Wall < DrawNode
     @cc_class_name = 'CCDrawNode'
     super
 
-    @vx     = -100
+    @vx     = -200
     @width  =   50
     @height =  200
     _draw
 
-    setPosition(FlappyApp.width-200, FlappyApp.height/2)
+    setPosition(FlappyApp.width, FlappyApp.height/2)
   end
 
   def _draw
@@ -32,6 +32,9 @@ class Wall < DrawNode
   def update(dt)
     pos = getPosition
     pos.x += @vx * dt
+    if pos.x < 0
+      pos.x = FlappyApp.width
+    end
     setPosition(pos)
   end
 end
