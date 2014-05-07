@@ -258,6 +258,24 @@ module Cocos2dx
     end
   end
 
+  class CCRect
+    def inspect
+      to_s
+    end
+    def to_s
+      "CCRect(origin=#{origin},size=#{size})"
+    end
+  end
+
+  class CCPoint
+    def inspect
+      to_s
+    end
+    def to_s
+      "CCRect(x=#{x},y=#{y})"
+    end
+  end
+
   CCSizeZero = cCSizeMake(0,0)
 end
 

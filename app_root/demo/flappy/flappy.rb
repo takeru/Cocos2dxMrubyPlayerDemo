@@ -26,12 +26,13 @@ class FlappyApp
     @bird  = Bird.new
     log "@bird.getContentSize=#{@bird.getContentSize}"
 
-    @wall  = Wall.new
+    @wall  = Wall.new(true)
     log "@wall.getContentSize=#{@wall.getContentSize}"
 
     @layer = Layer.new
     @layer.addChild(@bird)
     @layer.addChild(@wall)
+    @layer.addChild(@wall.lower_wall)
 
     @scene = Scene.new
     @scene.addChild(@layer)
@@ -70,6 +71,9 @@ class FlappyApp
   def update(dt)
     @bird.update(dt)
     @wall.update(dt)
+    if @wall.hit?(@bird)
+      reboot!
+    end
   end
 
   def width
