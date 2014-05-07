@@ -70,8 +70,10 @@ class FlappyApp
 
   def update(dt)
     @bird.update(dt)
-    @wall.update(dt)
-    if @wall.hit?(@bird)
+    if @wall.update(dt)
+      @bird.levelup
+    end
+    if @bird.y < 0 || FlappyApp.height < @bird.y || @wall.hit?(@bird)
       reboot!
     end
   end

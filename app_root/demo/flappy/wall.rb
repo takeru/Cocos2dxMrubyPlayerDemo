@@ -33,16 +33,16 @@ class Wall < DrawNode
     _draw_rect(
       -10, @height-10,
       @width+20, 20,
-      0.0, 0.8, 0.0, 1.0/2,
+      0.0, 0.8, 0.0, 1.0,
       3,
-      0.0, 0.6, 0.0, 1.0/2
+      0.0, 0.6, 0.0, 1.0
     )
     _draw_rect(
       -10, -10,
       @width+20, 20,
-      0.0, 0.8, 0.0, 1.0/2,
+      0.0, 0.8, 0.0, 1.0,
       3,
-      0.0, 0.6, 0.0, 1.0/2
+      0.0, 0.6, 0.0, 1.0
     )
     update(0)
   end
@@ -62,13 +62,17 @@ class Wall < DrawNode
   end
 
   def update(dt)
+    levelup = false
     @x += @vx * dt
     if @x < 0
       @x = FlappyApp.width
       @y = (rand*2-1) * 150 + FlappyApp.height/2
+      levelup = true
     end
     setPosition(@x,@y+@dy)
     @lower_wall.setPosition(@x,@y-@dy) if @lower_wall
+
+    return levelup
   end
 
   def hit?(bird)

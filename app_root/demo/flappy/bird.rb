@@ -1,29 +1,27 @@
 class Bird < Sprite
+  attr_reader :y
   def initialize
     @cc_class_name = 'CCSprite'
     super("images/bird.png")
 
-    @easy = 5
+    @easy = 15
+    @x  = FlappyApp.width * 0.2
+    @y  = FlappyApp.height / 2
     @vy = 0
-    setPosition(FlappyApp.width/2, FlappyApp.height/2)
+    update(0)
   end
 
   def up
-    @vy = 1500/@easy
+    @vy = 1500 / @easy
   end
 
   def update(dt)
-    @vy -= 100/@easy
-    pos = getPosition
-    pos.y += @vy * dt
-    if pos.y < 0
-      pos.y = 0
-      @vy = 0
-    end
-    if 640 < pos.y
-      pos.y = 640
-      @vy = 0
-    end
-    setPosition(pos)
+    @vy += -6000 * dt / @easy
+    @y += @vy * dt
+    setPosition(@x,@y)
+  end
+
+  def levelup
+    @easy *= 0.9
   end
 end
