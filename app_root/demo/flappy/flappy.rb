@@ -1,28 +1,37 @@
 include Cocos2dx
 fu = CCFileUtils.sharedFileUtils
-fu.addSearchPath(fu.fullPathFromRelativeFile("../..", __FILE__))
-fu.addSearchPath(fu.fullPathFromRelativeFile(".",     __FILE__))
+fullpath_of_this_file = fu.fullPathForFilename(__FILE__)
+fu.removeAllPaths
+fu.purgeCachedEntries
+fu.addSearchPath(fu.fullPathFromRelativeFile(".",     fullpath_of_this_file)) # current
+fu.addSearchPath(fu.fullPathFromRelativeFile("../..", fullpath_of_this_file)) # for lib
 Cocos2dxMrubyPlayer.load("lib/cocos2dx_support.rb")
-wsurl = "ws://192.168.0.7:9292"
+wsurl = "ws://192.168.0.6:9292"
 puts "connecting to: #{wsurl}"
 Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new(wsurl))
 log "SearchPaths: #{fu.getSearchPaths.inspect}"
 
 Cocos2dxMrubyPlayer.load("bird.rb")
+Cocos2dxMrubyPlayer.load("wall.rb")
+
 class FlappyApp
   attr_reader :scene
   def initialize
     log "FlappyApp#initialize"
     @win_size = CCDirector.sharedDirector.getWinSize
     log "@win_size=#{@win_size}"
+  end
 
+  def _create_scene
     @bird  = Bird.new
-    @bird.setPosition(@win_size.width/2, @win_size.height/2)
-    @vy = 0
     log "@bird.getContentSize=#{@bird.getContentSize}"
+
+    @wall  = Wall.new
+    log "@wall.getContentSize=#{@wall.getContentSize}"
 
     @layer = Layer.new
     @layer.addChild(@bird)
+    @layer.addChild(@wall)
 
     @scene = Scene.new
     @scene.addChild(@layer)
@@ -37,15 +46,21 @@ class FlappyApp
     end
     @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
+  end
 
+  def start
     @layer.scheduleUpdateWithPriorityLua(1) do |dt,node|
       update(dt)
     end
   end
 
   def onTouchBegan(touch)
-    log "touch"
-    @vy = 1500
+    unless @started
+      start
+      @started = true
+    end
+
+    @bird.up
     return true
   end
 
@@ -53,18 +68,23 @@ class FlappyApp
   end
 
   def update(dt)
-    @vy -= 100
-    pos = @bird.getPosition
-    pos.y += @vy * dt
-    if pos.y < 0
-      pos.y = 0
-      @vy = 0
-    end
-    if 640 < pos.y
-      pos.y = 640
-      @vy = 0
-    end
-    @bird.setPosition(pos)
+    @bird.update(dt)
+  end
+
+  def width
+    @win_size.width
+  end
+
+  def height
+    @win_size.height
+  end
+
+  @@instance = nil
+  def self.instance
+    @@instance ||= self.new
+  end
+  def self.method_missing(method,*args,&block)
+    instance.__send__(method,*args,&block)
   end
 end
 
@@ -74,7 +94,8 @@ begin
   frame_size = view.getFrameSize
   view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
   d.setDisplayStats(true)
-  app = FlappyApp.new
+  app = FlappyApp.instance
+  app._create_scene
   d.pushScene(app.scene.cc_object)
 rescue => e
   log "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"

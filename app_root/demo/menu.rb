@@ -1,12 +1,12 @@
 include Cocos2dx
 fu = CCFileUtils.sharedFileUtils
 fu.addSearchPath(fu.fullPathFromRelativeFile("..", __FILE__))
-fu.addSearchPath(fu.fullPathFromRelativeFile(""))
+fu.addSearchPath("")
 #fu.getSearchPaths.each_with_index do |path,i|
 #  puts "SearchPaths[#{i}]:#{path}"
 #end
 Cocos2dxMrubyPlayer.load("lib/cocos2dx_support.rb")
-#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 
 class MenuApp
   attr_reader :scene
@@ -36,6 +36,7 @@ class MenuApp
       "Kani"       =>{:load=>"demo/kani/app.rb"            },
       "WebSocket"  =>{:load=>"demo/websocket/app.rb"       },
       "Box2d"      =>{:load=>"demo/box2d/app.rb"           },
+      "Flappy"     =>{:load=>"demo/flappy/flappy.rb"       },
     }
 
     items_in_row = 3

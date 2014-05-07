@@ -237,9 +237,9 @@ module Cocos2dx
   end
 
   Callback.uncaught_exception do |e,bt|
-    s = "Exception: #{e.inspect}\n"
+    s = "* #{e.inspect}\n"
     bt.each do |b|
-      s << "  #{b}\n"
+      s << "  - #{b}\n"
     end if bt
     log(s)
   end
