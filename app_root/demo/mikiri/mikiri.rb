@@ -18,6 +18,13 @@ class MikiriApp
   def initialize
     @win_size = CCDirector.sharedDirector.getWinSize
     log "@win_size=#{@win_size}"
+
+    @state = nil
+    @best_time = CCUserDefault.sharedUserDefault.getFloatForKey("mikiri#best_time", 1000)
+    if 999 < @best_time
+      @best_time = nil
+    end
+    @try_count = CCUserDefault.sharedUserDefault.getIntegerForKey("mikiri#try_count", 0)
   end
 
   def _create_scene
@@ -47,7 +54,6 @@ class MikiriApp
     end
 
     ws_init
-    reset
   end
 
   def _add_reboot_menu
@@ -90,15 +96,18 @@ class MikiriApp
         case event
         when "open"
           ws_send('text'=>'hello!')
+          reset
         when "message"
           obj = JSON.parse(data)
           activity_log(obj['handle'] + " : " + obj['text'])
           if obj['time'] && obj['time'].to_f < 0.3
             CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect('laser3.mp3')
           end
-        when  "close"
+        when "close"
           @ws = nil
           activity_log("close")
+        when "error"
+          activity_log("error")
         end
       rescue => e
         log "Error in websocket callback: event=#{event} e=#{e.inspect}"
@@ -108,7 +117,7 @@ class MikiriApp
 
   def ws_send(data)
     data['text'] ||= data.inspect
-    data['handle'] = @handle
+    data['handle'] = @handle + "(#{@try_count})"
     @ws.send(JSON::stringify(data)) if @ws
   end
 
@@ -119,6 +128,12 @@ class MikiriApp
   end
 
   def reset
+    @try_count = CCUserDefault.sharedUserDefault.getIntegerForKey("mikiri#try_count", 0)
+    @try_count += 1
+    CCUserDefault.sharedUserDefault.setIntegerForKey("mikiri#try_count", @try_count)
+
+    ws_send('text'=>'start!')
+
     # state : wait -> start -> stop
     #              -> fail
     @state = :wait
@@ -142,10 +157,11 @@ class MikiriApp
       CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect("coin07.mp3")
 
       dt = @stop_time - @start_time
+      _update_best_time(dt)
       time = sprintf("%5.3f", dt)
-      ws_send('text'=>time, 'time'=>time)
+      text = "#{time} (best=#{sprintf("%5.3f", @best_time)})"
+      ws_send('text'=>text, 'time'=>time)
     when :stop, :fail
-      ws_send('text'=>'start!')
       reset
     end
   end
@@ -166,6 +182,14 @@ class MikiriApp
       @time_label.setString(sprintf("%5.3f", dt))
     when :fail
       @time_label.setString("fail!")
+    end
+  end
+
+  def _update_best_time(dt)
+    @best_time = CCUserDefault.sharedUserDefault.getFloatForKey("mikiri#best_time", 99999.0)
+    if dt < @best_time
+      @best_time = dt
+      CCUserDefault.sharedUserDefault.setFloatForKey("mikiri#best_time", @best_time)
     end
   end
 

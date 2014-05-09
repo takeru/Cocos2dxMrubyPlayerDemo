@@ -171,12 +171,14 @@ module Cocos2dx
       @queue = []
       @connected = false
       @ws = WebSocket.create(url) do |event,data|
-        if event=="open"
+        # puts "WebSocketLogger event=#{event} data=#{data.inspect}"
+        case event
+        when "open"
           @connected = true
           flush
-        end
-        if event=="close"
+        when "close"
           @connected = false
+          @ws.close
           @ws = nil
         end
       end
