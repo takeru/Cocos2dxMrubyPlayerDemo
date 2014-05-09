@@ -37,6 +37,7 @@ class MenuApp
       "WebSocket"  =>{:load=>"demo/websocket/app.rb"       },
       "Box2d"      =>{:load=>"demo/box2d/app.rb"           },
       "Flappy"     =>{:load=>"demo/flappy/flappy.rb"       },
+      "Mikiri"     =>{:load=>"demo/mikiri/mikiri.rb"       },
     }
 
     items_in_row = 3
