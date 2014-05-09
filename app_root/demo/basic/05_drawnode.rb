@@ -1,3 +1,10 @@
+include Cocos2dx
+fu = CCFileUtils.sharedFileUtils
+fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
+#puts "SearchPaths:#{fu.getSearchPaths}"
+Cocos2dxMrubyPlayer.load("../../lib/cocos2dx_support.rb")
+#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+
 class DrawNodeApp
   attr_reader :scene
   def initialize
@@ -86,14 +93,10 @@ class DrawNodeApp
   end
 end
 
-begin
-  d = CCDirector.sharedDirector
-  view = CCEGLView.sharedOpenGLView
-  frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
-  d.setDisplayStats(true)
-  app = DrawNodeApp.new
-  d.pushScene(app.scene.cc_object)
-rescue => e
-  log "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"
-end
+d = CCDirector.sharedDirector
+view = CCEGLView.sharedOpenGLView
+frame_size = view.getFrameSize
+view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
+d.setDisplayStats(true)
+app = DrawNodeApp.new
+d.pushScene(app.scene.cc_object)

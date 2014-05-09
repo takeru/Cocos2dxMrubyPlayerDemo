@@ -1,10 +1,15 @@
+include Cocos2dx
 fu = CCFileUtils.sharedFileUtils
+fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
+#puts "SearchPaths:#{fu.getSearchPaths}"
+Cocos2dxMrubyPlayer.load("../../lib/cocos2dx_support.rb")
+#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 fu.addSearchPath(fu.fullPathFromRelativeFile("resources", fu.fullPathForFilename(__FILE__)))
 
 RATE = 45
 
 %w(bg stage kani player).each do |x|
-  Cocos2dxMrubyPlayer.load("demo/kani/#{x}.rb")
+  Cocos2dxMrubyPlayer.load("#{x}.rb")
 end
 
 class KaniApp
@@ -27,16 +32,10 @@ class KaniApp
   end
 end
 
-begin
-  puts "DesignResolutionSize #{CCEGLView.sharedOpenGLView.getDesignResolutionSize}"
-  CCEGLView.sharedOpenGLView.setDesignResolutionSize(480,320,KResolutionExactFit)
-
-  d = CCDirector.sharedDirector
-  d.setContentScaleFactor(1.0)
-  d.setDisplayStats(true)
-
-  app = KaniApp.new
-  d.pushScene(app.scene.cc_object)
-rescue => e
-  puts "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"
-end
+puts "DesignResolutionSize #{CCEGLView.sharedOpenGLView.getDesignResolutionSize}"
+CCEGLView.sharedOpenGLView.setDesignResolutionSize(480,320,KResolutionExactFit)
+d = CCDirector.sharedDirector
+d.setContentScaleFactor(1.0)
+d.setDisplayStats(true)
+app = KaniApp.new
+d.pushScene(app.scene.cc_object)

@@ -18,6 +18,10 @@ def intro
   Cocos2dxMrubyPlayer.load("$APP/lib/cocos2dx_support.rb")
   include Cocos2dx
 
+  view = CCEGLView.sharedOpenGLView
+  frame_size = view.getFrameSize
+  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
+
   win_size = CCDirector.sharedDirector.getWinSize
   scene = Scene.new
   layer = Layer.new
@@ -35,6 +39,7 @@ def intro
   scene.addChild(layer)
 
   d = CCDirector.sharedDirector
+  d.setDisplayStats(false)
   d.pushScene(scene.cc_object)
 end
 

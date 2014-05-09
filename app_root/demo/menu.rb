@@ -1,12 +1,9 @@
 include Cocos2dx
 fu = CCFileUtils.sharedFileUtils
-fu.addSearchPath(fu.fullPathFromRelativeFile("..", __FILE__))
-fu.addSearchPath("")
-#fu.getSearchPaths.each_with_index do |path,i|
-#  puts "SearchPaths[#{i}]:#{path}"
-#end
-Cocos2dxMrubyPlayer.load("lib/cocos2dx_support.rb")
-Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
+#puts "SearchPaths:#{fu.getSearchPaths}"
+Cocos2dxMrubyPlayer.load("../lib/cocos2dx_support.rb")
+#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 
 class MenuApp
   attr_reader :scene
@@ -21,22 +18,22 @@ class MenuApp
     menu = Menu.new
     menu.setPosition(0,0)
     menus = {
-      "*Setup"     =>{:load=>"setup/app.rb"                },
-      "*GitHub"    =>{:url =>"https://github.com/takeru/Cocos2dxMrubyPlayerDemo"},
-      "*TestFlight"=>{:url =>"https://testflightapp.com/m/apps"},
-      "Hello"      =>{:load=>"demo/basic/01_hello.rb"      },
-      "Sprite"     =>{:load=>"demo/basic/02_sprite.rb"     },
-      "Touch"      =>{:load=>"demo/basic/03_touch.rb"      },
-      "MultiTouch" =>{:load=>"demo/basic/04_multi_touch.rb"},
-      "DrawNode"   =>{:load=>"demo/basic/05_drawnode.rb"   },
-      "Update"     =>{:load=>"demo/basic/06_update.rb"     },
-      "Ext"        =>{:load=>"demo/basic/07_ext.rb"        },
-      "LabelTTF"   =>{:load=>"demo/basic/08_labelttf.rb"   },
-      "NyanGame"   =>{:load=>"demo/nyangame/nyangame.rb"   },
-      "Kani"       =>{:load=>"demo/kani/app.rb"            },
-      "WebSocket"  =>{:load=>"demo/websocket/app.rb"       },
-      "Box2d"      =>{:load=>"demo/box2d/app.rb"           },
-      "Flappy"     =>{:load=>"demo/flappy/flappy.rb"       },
+      "*Setup"     =>{:reboot=>"setup/app.rb"                },
+      "*GitHub"    =>{:url   =>"https://github.com/takeru/Cocos2dxMrubyPlayerDemo"},
+      "*TestFlight"=>{:url   =>"https://testflightapp.com/m/apps"},
+      "Hello"      =>{:reboot=>"demo/basic/01_hello.rb"      },
+      "Sprite"     =>{:reboot=>"demo/basic/02_sprite.rb"     },
+      "Touch"      =>{:reboot=>"demo/basic/03_touch.rb"      },
+      "MultiTouch" =>{:reboot=>"demo/basic/04_multi_touch.rb"},
+      "DrawNode"   =>{:reboot=>"demo/basic/05_drawnode.rb"   },
+      "Update"     =>{:reboot=>"demo/basic/06_update.rb"     },
+      "Ext"        =>{:reboot=>"demo/basic/07_ext.rb"        },
+      "LabelTTF"   =>{:reboot=>"demo/basic/08_labelttf.rb"   },
+      "NyanGame"   =>{:reboot=>"demo/nyangame/nyangame.rb"   },
+      "Kani"       =>{:reboot=>"demo/kani/app.rb"            },
+      "WebSocket"  =>{:reboot=>"demo/websocket/app.rb"       },
+      "Box2d"      =>{:reboot=>"demo/box2d/app.rb"           },
+      "Flappy"     =>{:reboot=>"demo/flappy/flappy.rb"       },
       "Mikiri"     =>{:reboot=>"demo/mikiri/mikiri.rb"       },
     }
 
@@ -54,13 +51,14 @@ class MenuApp
       item.registerScriptTapHandler do
         log "Menu: #{text} selected."
         begin
-          if action[:load]
-            Cocos2dxMrubyPlayer.load(action[:load])
-          elsif action[:reboot]
+          #if action[:load]
+          #  Cocos2dxMrubyPlayer.load(action[:load])
+          #els
+          if action[:reboot]
             path = action[:reboot]
             case app_or_dbx
             when :dropbox
-              path = "$DBX/#{path}"
+              path = "$DBX/app_root/#{path}"
             when :app
               path = "$APP/#{path}"
             else
@@ -98,14 +96,11 @@ class MenuApp
   end
 end
 
-begin
-  d = Cocos2dx::CCDirector.sharedDirector
-  view = Cocos2dx::CCEGLView.sharedOpenGLView
-  frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
-  d.setDisplayStats(false)
-  app = MenuApp.new
-  d.pushScene(app.scene.cc_object)
-rescue => e
-  log "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"
-end
+
+d = Cocos2dx::CCDirector.sharedDirector
+view = Cocos2dx::CCEGLView.sharedOpenGLView
+frame_size = view.getFrameSize
+view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
+d.setDisplayStats(false)
+app = MenuApp.new
+d.pushScene(app.scene.cc_object)

@@ -1,15 +1,10 @@
 include Cocos2dx
 fu = CCFileUtils.sharedFileUtils
-fullpath_of_this_file = fu.fullPathForFilename(__FILE__)
-fu.removeAllPaths
-fu.purgeCachedEntries
-fu.addSearchPath(fu.fullPathFromRelativeFile(".",     fullpath_of_this_file)) # current
-fu.addSearchPath(fu.fullPathFromRelativeFile("../..", fullpath_of_this_file)) # for lib
-Cocos2dxMrubyPlayer.load("lib/cocos2dx_support.rb")
-wsurl = "ws://192.168.0.6:9292"
-puts "connecting to: #{wsurl}"
-Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new(wsurl))
-log "SearchPaths: #{fu.getSearchPaths.inspect}"
+fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
+#puts "SearchPaths:#{fu.getSearchPaths}"
+Cocos2dxMrubyPlayer.load("../../lib/cocos2dx_support.rb")
+#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+fu.addSearchPath(fu.fullPathFromRelativeFile("resources", fu.fullPathForFilename(__FILE__)))
 
 Cocos2dxMrubyPlayer.load("bird.rb")
 Cocos2dxMrubyPlayer.load("wall.rb")
@@ -96,15 +91,12 @@ class FlappyApp
   end
 end
 
-begin
-  d = Cocos2dx::CCDirector.sharedDirector
-  view = Cocos2dx::CCEGLView.sharedOpenGLView
-  frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
-  d.setDisplayStats(true)
-  app = FlappyApp.instance
-  app._create_scene
-  d.pushScene(app.scene.cc_object)
-rescue => e
-  log "ERROR: #{([e.inspect]+e.backtrace).join("\n  ")}"
-end
+
+d = Cocos2dx::CCDirector.sharedDirector
+view = Cocos2dx::CCEGLView.sharedOpenGLView
+frame_size = view.getFrameSize
+view.setDesignResolutionSize(frame_size.width, frame_size.height, Cocos2dx::KResolutionExactFit)
+d.setDisplayStats(true)
+app = FlappyApp.instance
+app._create_scene
+d.pushScene(app.scene.cc_object)

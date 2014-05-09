@@ -1,3 +1,10 @@
+include Cocos2dx
+fu = CCFileUtils.sharedFileUtils
+fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
+#puts "SearchPaths:#{fu.getSearchPaths}"
+Cocos2dxMrubyPlayer.load("../../lib/cocos2dx_support.rb")
+#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+
 $box2d_to_pixel = 80.0
 
 class Box < DrawNode
@@ -241,14 +248,10 @@ class Box2dApp
   end
 end
 
-begin
-  d = CCDirector.sharedDirector
-  view = CCEGLView.sharedOpenGLView
-  frame_size = view.getFrameSize
-  view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
-  d.setDisplayStats(true)
-  app = Box2dApp.new
-  d.pushScene(app.scene.cc_object)
-rescue => e
-  log "ERROR #{e.inspect} #{e.backtrace.first}"
-end
+d = CCDirector.sharedDirector
+view = CCEGLView.sharedOpenGLView
+frame_size = view.getFrameSize
+view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
+d.setDisplayStats(true)
+app = Box2dApp.new
+d.pushScene(app.scene.cc_object)
