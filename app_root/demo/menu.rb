@@ -37,7 +37,7 @@ class MenuApp
       "WebSocket"  =>{:load=>"demo/websocket/app.rb"       },
       "Box2d"      =>{:load=>"demo/box2d/app.rb"           },
       "Flappy"     =>{:load=>"demo/flappy/flappy.rb"       },
-      "Mikiri"     =>{:load=>"demo/mikiri/mikiri.rb"       },
+      "Mikiri"     =>{:reboot=>"demo/mikiri/mikiri.rb"       },
     }
 
     items_in_row = 3
@@ -56,6 +56,17 @@ class MenuApp
         begin
           if action[:load]
             Cocos2dxMrubyPlayer.load(action[:load])
+          elsif action[:reboot]
+            path = action[:reboot]
+            case app_or_dbx
+            when :dropbox
+              path = "$DBX/#{path}"
+            when :app
+              path = "$APP/#{path}"
+            else
+              raise
+            end
+            Cocos2dxMrubyPlayer.reboot!(path)
           elsif action[:url]
             Cocos2dxMrubyPlayer.open_url(action[:url])
           end
@@ -68,18 +79,22 @@ class MenuApp
     end
     @layer.addChild(menu)
 
-    app_or_dbx = "?"
-    if __FILE__.include?("Documents/dropbox_root")
-      app_or_dbx = "Dbx"
-    elsif __FILE__.include?(".app/app_root")
-      app_or_dbx = "App"
-    end
     label = LabelTTF.new("(this menu is loaded from #{app_or_dbx})", "Marker Felt", 20)
     label.setPosition(@win_size.width/2,50)
     @layer.addChild(label)
 
     @scene = Scene.new
     @scene.addChild(@layer)
+  end
+
+  def app_or_dbx
+    if __FILE__.include?("Documents/dropbox_root")
+      :dropbox
+    elsif __FILE__.include?(".app/app_root")
+      :app
+    else
+      :unknown
+    end
   end
 end
 

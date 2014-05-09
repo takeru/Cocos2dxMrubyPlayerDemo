@@ -2,9 +2,9 @@ $text = <<END
 This file is: Dropbox/.../Cocos2dxMrubyPlayer/boot.rb
 
 App boot sequence:
-  First, $DB/boot.rb is exists, will be tried to load.
-  Second, (if $DB/boot.rb does not exist or error,) $APP/boot.rb will be loaded.
-  $DB/  : DropBox app directory, name is 'Cocos2dxMrubyPlayer'.
+  First, $DBX/boot.rb is exists, will be tried to load.
+  Second, (if $DBX/boot.rb does not exist or error,) $APP/boot.rb will be loaded.
+  $DBX/ : DropBox app directory, name is 'Cocos2dxMrubyPlayer'.
   $APP/ : App bundled example code directory. This is 'app_root' in github.
 
 You can edit this file on dropbox, then file on device is updated too.
@@ -22,7 +22,7 @@ def intro
   scene = Scene.new
   layer = Layer.new
   layer.registerScriptTouchHandler do |eventType, touch|
-    Cocos2dxMrubyPlayer.load("$DB/app_root/demo/menu.rb")
+    Cocos2dxMrubyPlayer.load("$DBX/app_root/demo/menu.rb")
   end
   layer.setTouchMode(KCCTouchesOneByOne)
   layer.setTouchEnabled(true)
@@ -67,7 +67,7 @@ end
 # same as app menu. but code is loaded from dropbox.
 # Please checkout from https://github.com/takeru/Cocos2dxMrubyPlayerDemo
 def menu_app_on_dropbox
-  Cocos2dxMrubyPlayer.load("$DB/app_root/demo/menu.rb")
+  Cocos2dxMrubyPlayer.load("$DBX/app_root/demo/menu.rb")
 end
 
 def goto_app_boot
