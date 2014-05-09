@@ -3,16 +3,47 @@ fu = CCFileUtils.sharedFileUtils
 fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
 #puts "SearchPaths:#{fu.getSearchPaths}"
 Cocos2dxMrubyPlayer.load("../../lib/cocos2dx_support.rb")
-#Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
+Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
 
 $box2d_to_pixel = 80.0
+$world = Box2D::B2World.new(Box2D::B2Vec2.new(0,-9.8))
 
 class Box < DrawNode
-  def initialize
+  def initialize(type, x, y, width, height, angle, density, color)
     @cc_class_name = 'CCDrawNode'
-    super
+    super()
+
+    bd = Box2D::B2BodyDef.new
+    bd.type = B2BodyType_Map[type]
+    bd.position = Box2D::B2Vec2.new(x, y)
+    bd.angle = angle
+    @body = $world.createBody(bd)
+
+    shape = Box2D::B2PolygonShape.new
+    shape.setAsBox(width/2,height/2)
+    fixture = @body.createFixture(shape, density)
+
+    points = [
+      ccp(-width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
+      ccp( width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
+      ccp( width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel),
+      ccp(-width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel)
+    ]
+    drawPolygon(points,
+      ccc4f(color[0], color[1], color[2], 1),
+      0,
+      ccc4f(0, 0, 0, 0)
+    )
+    update
   end
-  attr_accessor :body
+
+  B2BodyType_Map = {
+    :dynamic   => Box2D::B2_dynamicBody,
+    :static    => Box2D::B2_staticBody,
+    :kinematic => Box2D::B2_kinematicBody
+  }
+
+  attr_reader :body
   def update
     pos = @body.getPosition
     setPosition(
@@ -43,29 +74,29 @@ class Box2dApp
     @layer.setPosition(1.9833,168.662)
     @layer.setScale(0.1045)
 
-    @layer.setTouchMode(KCCTouchesOneByOne) # KCCTouchesAllAtOnce
-    @layer.registerScriptTouchHandler(false) do |eventType, touch|
-      case eventType
-      when CCTOUCHBEGAN
-        onTouchBegan(touch)
-      when CCTOUCHMOVED
-        onTouchMoved(touch)
-      when CCTOUCHENDED
-        onTouchEnded(touch)
-      when CCTOUCHCANCELLED
-        onTouchCanceled(touch)
-      else
-        raise "unknown eventType=#{eventType} touches=#{touches.inspect}"
-      end
-    end
-    @layer.setTouchEnabled(true)
+    _setup_touch
+    _create_boxes
 
+    @scene = Scene.new
+    @scene.addChild(@layer)
+
+    @layer.scheduleUpdateWithPriorityLua(1) do |dt,node|
+      update(dt)
+    end
+
+    @layer_fixed = Layer.new
+    @layer_fixed.addChild(_create_reboot_menu)
+    @scene.addChild(@layer_fixed)
+
+    nil
+  end
+
+  def _create_boxes
     # box2d
     width  = @win_size.width  / $box2d_to_pixel
     height = @win_size.height / $box2d_to_pixel
-    @world = Box2D::B2World.new(Box2D::B2Vec2.new(0,-9.8))
 
-    ground0 = _create_box(:static,
+    ground0 = Box.new(:static,
       x = width/2,
       y = 0.10,
       w = width * 0.8,
@@ -76,7 +107,7 @@ class Box2dApp
     )
     @layer.addChild(ground0)
 
-    ground1 = _create_box(:static,
+    ground1 = Box.new(:static,
       x = width*-1.3,
       y = -50.0,
       w = width * 0.8,
@@ -87,7 +118,7 @@ class Box2dApp
     )
     @layer.addChild(ground1)
 
-    ground2 = _create_box(:static,
+    ground2 = Box.new(:static,
       x = width*1.3,
       y = -30.0,
       w = width * 0.8,
@@ -98,49 +129,41 @@ class Box2dApp
     )
     @layer.addChild(ground2)
 
-
-    create_box = proc do
-      _create_box(:dynamic,
-        x = rand*width,
-        y = rand*height*3 + 5,
-        w = 100.0 * (0.1 + rand) / $box2d_to_pixel,
-        h = 100.0 * (0.1 + rand) / $box2d_to_pixel,
-        a = 360 * rand,
-        d = 0.1 + rand,
-        [0.3+rand*0.7,0.3+rand*0.7,0.3+rand*0.7]
-      )
-    end
-
     @boxes = []
     100.times do
-      box = create_box.call
+      box = create_random_box
       @layer.addChild(box)
       @boxes << box
     end
+  end
 
-    @scene = Scene.new
-    @scene.addChild(@layer)
+  def update(dt)
+    $world.step(dt, 8, 3)
+    @boxes.each do |box|
+      unless box.update
+        $world.destroyBody(box.body)
+        box.removeFromParentAndCleanup(true)
+        @boxes.delete(box)
 
-    @layer.scheduleUpdateWithPriorityLua(1) do |dt,node|
-      @world.step(dt, 8, 3)
-      @boxes.each do |box|
-        unless box.update
-          @world.destroyBody(box.body)
-          box.removeFromParentAndCleanup(true)
-          @boxes.delete(box)
-
-          box = create_box.call
-          @layer.addChild(box)
-          @boxes << box
-        end
+        box = create_random_box
+        @layer.addChild(box)
+        @boxes << box
       end
     end
+  end
 
-    layer0 = Layer.new
-    layer0.addChild(_create_reboot_menu)
-    @scene.addChild(layer0)
-
-    nil
+  def create_random_box
+    width  = @win_size.width  / $box2d_to_pixel
+    height = @win_size.height / $box2d_to_pixel
+    Box.new(:dynamic,
+      x = rand*width,
+      y = rand*height*3 + 5,
+      w = 100.0 * (0.1 + rand) / $box2d_to_pixel,
+      h = 100.0 * (0.1 + rand) / $box2d_to_pixel,
+      a = 360 * rand,
+      d = 0.1 + rand,
+      [0.3+rand*0.7,0.3+rand*0.7,0.3+rand*0.7]
+    )
   end
 
   def _create_reboot_menu
@@ -157,38 +180,23 @@ class Box2dApp
     menu
   end
 
-  B2BodyType_Map = {
-    :dynamic   => Box2D::B2_dynamicBody,
-    :static    => Box2D::B2_staticBody,
-    :kinematic => Box2D::B2_kinematicBody
-  }
-
-  def _create_box(type, x, y, width, height, angle, density, color)
-    bd = Box2D::B2BodyDef.new
-    bd.type = B2BodyType_Map[type]
-    bd.position = Box2D::B2Vec2.new(x, y)
-    bd.angle = angle
-    body = @world.createBody(bd)
-
-    shape = Box2D::B2PolygonShape.new
-    shape.setAsBox(width/2,height/2)
-    fixture = body.createFixture(shape, density)
-
-    node = Box.new
-    points = [
-      ccp(-width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
-      ccp( width/2*$box2d_to_pixel, -height/2*$box2d_to_pixel),
-      ccp( width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel),
-      ccp(-width/2*$box2d_to_pixel,  height/2*$box2d_to_pixel)
-    ]
-    node.drawPolygon(points,
-      ccc4f(color[0], color[1], color[2], 1),
-      0,
-      ccc4f(0, 0, 0, 0)
-    )
-    node.body = body
-    node.update
-    return node
+  def _setup_touch
+    @layer.setTouchMode(KCCTouchesOneByOne)
+    @layer.registerScriptTouchHandler(false) do |eventType, touch|
+      case eventType
+      when CCTOUCHBEGAN
+        onTouchBegan(touch)
+      when CCTOUCHMOVED
+        onTouchMoved(touch)
+      when CCTOUCHENDED
+        onTouchEnded(touch)
+      when CCTOUCHCANCELLED
+        onTouchCanceled(touch)
+      else
+        raise "unknown eventType=#{eventType} touches=#{touches.inspect}"
+      end
+    end
+    @layer.setTouchEnabled(true)
   end
 
   def onTouchBegan(touch)
