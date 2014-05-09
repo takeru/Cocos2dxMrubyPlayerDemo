@@ -247,6 +247,31 @@ module Cocos2dx
   Callback.before_shutdown do
     log("before_shutdown")
     Cocos2dx::Logger.cleanup
+    WebSocket.cleanup
+  end
+
+  class WebSocket
+    class << self
+      def active_sockets
+        @active_sockets ||= []
+      end
+      alias :create_with_autoclose :create unless method_defined?(:create_with_autoclose)
+      def create(url, &block)
+        ws = create_with_autoclose(url, &block)
+        active_sockets << ws
+        ws
+      end
+      def cleanup
+        active_sockets.dup.each do |ws|
+          ws.close
+        end
+      end
+    end
+    alias :close_with_autoclose :close unless method_defined?(:close_with_autoclose)
+    def close
+      WebSocket.active_sockets.delete(self)
+      close_with_autoclose
+    end
   end
 
   class CCSize
