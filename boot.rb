@@ -21,8 +21,11 @@ def intro
   view = CCEGLView.sharedOpenGLView
   frame_size = view.getFrameSize
   view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
+  log "frame_size=#{frame_size}"
 
   win_size = CCDirector.sharedDirector.getWinSize
+  log "win_size=#{win_size}"
+
   scene = Scene.new
   layer = Layer.new
   layer.registerScriptTouchHandler do |eventType, touch|

@@ -22,7 +22,7 @@ class SetupApp
       text = "DropBox: (Not linked)"
     end
     label = LabelTTF.new(text, "Marker Felt", 40)
-    label.setPosition(@win_size.width/2, @win_size.height-100)
+    label.setPosition(@win_size.width/2, @win_size.height-50)
     @layer.addChild(label)
 
     menu = Menu.new
@@ -41,12 +41,26 @@ class SetupApp
       end
     end
     item.setFontSizeObj(50)
-    item.setPosition(@win_size.width/2, @win_size.height-200)
+    item.setPosition(@win_size.width/2, @win_size.height-150)
     menu.addChild(item)
 
     label2 = LabelTTF.new("After linked, checkout sample code from github.", "Marker Felt", 30)
-    label2.setPosition(@win_size.width/2, @win_size.height-350)
+    label2.setPosition(@win_size.width/2, @win_size.height-230)
     @layer.addChild(label2)
+
+    # orientation
+    orientation = :portrait
+    if Cocos2dxMrubyPlayer.orientation == :portrait
+      orientation = :right
+    end
+    item3 = MenuItemFont.new("Change orientation to #{orientation}")
+    item3.registerScriptTapHandler do
+      Cocos2dxMrubyPlayer.orientation = orientation
+      Cocos2dxMrubyPlayer.exit
+    end
+    item3.setFontSizeObj(40)
+    item3.setPosition(@win_size.width/2, @win_size.height-400)
+    menu.addChild(item3)
 
     # back
     item2 = MenuItemFont.new("Back")
@@ -54,11 +68,10 @@ class SetupApp
       reboot!
     end
     item2.setFontSizeObj(40)
-    item2.setPosition(@win_size.width/2, @win_size.height-500)
+    item2.setPosition(@win_size.width/2, @win_size.height-550)
     menu.addChild(item2)
 
     @layer.addChild(menu)
-
 
     @scene = Scene.new
     @scene.addChild(@layer)

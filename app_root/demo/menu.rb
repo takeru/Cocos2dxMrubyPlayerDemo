@@ -68,6 +68,8 @@ class MenuApp
             Cocos2dxMrubyPlayer.reboot!(path)
           elsif action[:url]
             Cocos2dxMrubyPlayer.open_url(action[:url])
+          elsif action[:proc]
+            action[:proc].call
           end
         rescue => e
           log "failed to load '#{text}'. e=#{e.inspect}"
