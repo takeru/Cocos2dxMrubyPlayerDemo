@@ -32,7 +32,8 @@ class MenuApp
       "NyanGame"   =>{:reboot=>"demo/nyangame/nyangame.rb"   },
       "Kani"       =>{:reboot=>"demo/kani/app.rb"            },
       "WebSocket"  =>{:reboot=>"demo/websocket/app.rb"       },
-      "Box2d"      =>{:reboot=>"demo/box2d/app.rb"           },
+      "Box2d-1"    =>{:reboot=>"demo/box2d/app1.rb"          },
+      "Box2d-2"    =>{:reboot=>"demo/box2d/app2.rb"          },
       "Flappy"     =>{:reboot=>"demo/flappy/flappy.rb"       },
       "Mikiri"     =>{:reboot=>"demo/mikiri/mikiri.rb"       },
     }
