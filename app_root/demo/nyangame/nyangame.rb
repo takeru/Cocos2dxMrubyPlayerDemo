@@ -385,6 +385,6 @@ class NyanGame
 end
 
 d = CCDirector.sharedDirector
-d.setContentScaleFactor(768.0 / d.getWinSize.height)
+d.setContentScaleFactor([1364/d.getWinSize.width,768/d.getWinSize.height].max)
 nyangame = NyanGame.new
 d.pushScene(nyangame.scene.cc_object)
