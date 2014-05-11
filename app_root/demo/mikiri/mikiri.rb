@@ -82,13 +82,13 @@ class MikiriApp
       @handle = "anon"+(1000 + rand(9000)).to_s
     end
 
-    ws_url = "ws://infinite-shelf-9645.herokuapp.com/?room=mikiri"
+    ws_url = "ws://infinite-shelf-9645.herokuapp.com/?room=demo_mikiri"
     @ws = WebSocket.create(ws_url) do |event,data|
       log "ws event=#{event} data=#{data}"
       begin
         case event
         when "open"
-          ws_send('text'=>'hello!')
+          ws_send('text'=>"hello! (best=#{sprintf("%5.3f", @best_time)})")
           reset
         when "message"
           obj = JSON.parse(data)
@@ -110,7 +110,7 @@ class MikiriApp
 
   def ws_send(data)
     data['text'] ||= data.inspect
-    data['handle'] = @handle + "(#{@try_count})"
+    data['handle'] = @handle
     @ws.send(JSON::stringify(data)) if @ws
   end
 
@@ -125,7 +125,7 @@ class MikiriApp
     @try_count += 1
     CCUserDefault.sharedUserDefault.setIntegerForKey("mikiri#try_count", @try_count)
 
-    ws_send('text'=>'start!')
+    ws_send('text'=>"start!(#{@try_count})")
 
     # state : wait -> start -> stop
     #              -> fail

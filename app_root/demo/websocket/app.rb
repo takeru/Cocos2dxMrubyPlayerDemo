@@ -1,6 +1,7 @@
 include Cocos2dx
 fu = CCFileUtils.sharedFileUtils
 fu.addSearchPath(fu.fullPathFromRelativeFile("", __FILE__))
+fu.addSearchPath("")
 #puts "SearchPaths:#{fu.getSearchPaths}"
 Cocos2dxMrubyPlayer.load("../../lib/cocos2dx_support.rb")
 #Cocos2dx::Logger.add(Cocos2dx::WebSocketLogger.new("ws://192.168.0.6:9292"))
@@ -28,6 +29,22 @@ class WsApp
 
     @layer = Layer.new
 
+    _setup_touch
+    @layer.addChild(_create_reboot_menu)
+
+    @scene = Scene.new
+    @scene.addChild(@layer)
+
+    log_layer = LogLayer.new
+    @scene.addChild(log_layer)
+    Logger.add(log_layer)
+
+    _setup_websocket
+
+    nil
+  end
+
+  def _setup_touch
     @layer.registerScriptTouchHandler do |eventType, touch|
       case eventType
       when CCTOUCHBEGAN
@@ -44,39 +61,6 @@ class WsApp
     end
     @layer.setTouchMode(KCCTouchesOneByOne)
     @layer.setTouchEnabled(true)
-    @layer.addChild(_create_reboot_menu)
-
-    @scene = Scene.new
-    @scene.addChild(@layer)
-
-    log_layer = LogLayer.new
-    @scene.addChild(log_layer)
-    Logger.add(log_layer)
-
-    ws_url = "ws://infinite-shelf-9645.herokuapp.com"
-    # ws_url = "ws://echo.websocket.org"
-    @ws = WebSocket.create(ws_url) do |event,data|
-      if event=="message"
-        begin
-          obj = JSON.parse(data)
-          if obj['tap']
-            sound, icon = @sound_and_icons[obj['tap']['index']]
-            sprite = Sprite.new(icon)
-            sprite.setPosition(obj['tap']['x'], obj['tap']['y'])
-            @layer.addChild(sprite)
-            CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect(sound)
-          end
-        rescue => e
-          log "event=message e=#{e.inspect}"
-        end
-      end
-      if event=="close"
-        @ws = nil
-      end
-      log "ws: #{event} [#{data}]"
-    end
-
-    nil
   end
 
   def _create_reboot_menu
@@ -94,25 +78,65 @@ class WsApp
     menu
   end
 
+  def _setup_websocket
+    ws_url = "ws://infinite-shelf-9645.herokuapp.com/?room=demo_websocket"
+    # ws_url = "ws://echo.websocket.org"
+    ws = WebSocket.create(ws_url) do |event,data|
+      case event
+      when 'open'
+        log "**** open ****"
+        @ws = ws
+      when 'message'
+        begin
+          obj = JSON.parse(data)
+          if obj['tap']
+            sound, icon = @sound_and_icons[obj['tap']['index']]
+            sprite = Sprite.new(icon)
+            sprite.setPosition(obj['tap']['x'], obj['tap']['y'])
+            @layer.addChild(sprite)
+            CocosDenshion::SimpleAudioEngine.sharedEngine.playEffect(sound)
+            log("RTT=#{sprintf('%5.3f', Time.now.to_f - obj['tap']['time'])}")
+          end
+        rescue => e
+          log "event=message e=#{e.inspect}"
+        end
+      when 'close'
+        log "**** close ****"
+        @ws = nil
+      else
+        log "**** #{event} ****"
+      end
+    end
+  end
+
   def onTouchBegan(touch)
     point = @layer.convertTouchToNodeSpace(touch)
-    log("onTouchBegan: #{point.x},#{point.y}")
+    log("onTouchBegan: #{point.x.to_i},#{point.y.to_i}")
 
     name = ["Icon-57.png","Icon-72.png","Icon-114.png","Icon-144.png"].sample
-    @ws.send(JSON::stringify({handle: @handle, text:"TAP(#{point.x},#{point.y})", tap:{x:point.x, y:point.y, index:@my_index}})) if @ws
+    if @ws
+      @ws.send(JSON::stringify({handle: @handle,
+                                text:"TAP(#{point.x.to_i},#{point.y.to_i})",
+                                tap:{
+                                  x:point.x.to_i,
+                                  y:point.y.to_i,
+                                  index:@my_index,
+                                  time:Time.now.to_f
+                                }
+                                }))
+    end
 
     return true
   end
 
   def onTouchMoved(touch)
-    point = @layer.convertTouchToNodeSpace(touch)
-    log("onTouchMoved: #{point.x},#{point.y}")
+    #point = @layer.convertTouchToNodeSpace(touch)
+    #log("onTouchMoved: #{point.x},#{point.y}")
   end
 
   def onTouchEnded(touch)
-    point = @layer.convertTouchToNodeSpace(touch)
-    log("onTouchEnded: #{point.x},#{point.y}")
-
+    #point = @layer.convertTouchToNodeSpace(touch)
+    #log("onTouchEnded: #{point.x.to_i},#{point.y.to_i}")
     @touch_count += 1
     log "@touch_count = #{@touch_count}"
   end
@@ -123,6 +147,6 @@ d = CCDirector.sharedDirector
 view = CCEGLView.sharedOpenGLView
 frame_size = view.getFrameSize
 view.setDesignResolutionSize(frame_size.width, frame_size.height, KResolutionExactFit)
-d.setDisplayStats(true)
+d.setDisplayStats(false)
 app = WsApp.new
 d.pushScene(app.scene.cc_object)

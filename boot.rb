@@ -3,7 +3,7 @@ This file is: Dropbox/.../Cocos2dxMrubyPlayer/boot.rb
 
 App boot sequence:
   First, $DBX/boot.rb is exists, will be tried to load.
-  Second, (if $DBX/boot.rb does not exist or error,) $APP/boot.rb will be loaded.
+  Second, (if $DBX/boot.rb does not exist or error,) $APP/demo/menu.rb will be loaded.
   $DBX/ : DropBox app directory, name is 'Cocos2dxMrubyPlayer'.
   $APP/ : App bundled example code directory. This is 'app_root' in github.
 
